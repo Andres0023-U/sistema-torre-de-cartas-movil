@@ -1,15 +1,49 @@
 import 'package:get_it/get_it.dart';
 import '../../features/account/presentation/bloc/account_bloc.dart';
 import '../../features/admin/presentation/bloc/admin_bloc.dart';
+import '../../features/auth/data/datasources/auth_remote_data_source.dart';
+import '../../features/auth/data/repositories/auth_repository_impl.dart';
+import '../../features/auth/domain/repositories/auth_repository.dart';
+import '../../features/auth/domain/usecases/login_usecase.dart';
+import '../../features/auth/domain/usecases/logout_usecase.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/decks/presentation/bloc/decks_bloc.dart';
 import '../../features/ranking/presentation/bloc/ranking_bloc.dart';
 import '../../features/tournaments/presentation/bloc/tournaments_bloc.dart';
+import '../network/dio_client.dart';
+import '../network/token_holder.dart';
 
 final sl = GetIt.instance;
 
 void initDependencies() {
-  sl.registerLazySingleton<AuthBloc>(() => AuthBloc());
+  sl.registerLazySingleton<TokenHolder>(() => TokenHolder());
+  sl.registerLazySingleton<DioClient>(
+    () => DioClient(tokenHolder: sl<TokenHolder>()),
+  );
+
+  // Auth data & domain
+  sl.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(dioClient: sl<DioClient>()),
+  );
+  sl.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(remoteDataSource: sl<AuthRemoteDataSource>()),
+  );
+  sl.registerLazySingleton<LoginUseCase>(
+    () => LoginUseCase(
+      repository: sl<AuthRepository>(),
+      tokenHolder: sl<TokenHolder>(),
+    ),
+  );
+  sl.registerLazySingleton<LogoutUseCase>(
+    () => LogoutUseCase(tokenHolder: sl<TokenHolder>()),
+  );
+
+  sl.registerLazySingleton<AuthBloc>(
+    () => AuthBloc(
+      loginUseCase: sl<LoginUseCase>(),
+      logoutUseCase: sl<LogoutUseCase>(),
+    ),
+  );
 
   sl.registerFactory<TournamentsBloc>(() => TournamentsBloc());
   sl.registerFactory<DecksBloc>(() => DecksBloc());

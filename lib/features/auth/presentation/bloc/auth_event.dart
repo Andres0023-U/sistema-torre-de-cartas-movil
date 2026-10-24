@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import '../../domain/entities/user_role.dart';
 
 abstract class AuthEvent extends Equatable {
   const AuthEvent();
@@ -10,13 +9,17 @@ abstract class AuthEvent extends Equatable {
 
 class AuthCheckRequested extends AuthEvent {}
 
-class AuthLoginSubmitted extends AuthEvent {
-  final UserRole role;
+class AuthLoginRequested extends AuthEvent {
+  final String email;
+  final String password;
 
-  const AuthLoginSubmitted(this.role);
+  const AuthLoginRequested({
+    required this.email,
+    required this.password,
+  });
 
   @override
-  List<Object?> get props => [role];
+  List<Object?> get props => [email, password];
 }
 
 class AuthLogoutRequested extends AuthEvent {}

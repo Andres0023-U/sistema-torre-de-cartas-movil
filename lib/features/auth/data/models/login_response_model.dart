@@ -9,16 +9,16 @@ class LoginResponseModel extends LoginResponseEntity {
 
   factory LoginResponseModel.fromJson(Map<String, dynamic> json) {
     return LoginResponseModel(
-      accessToken: json['accessToken'] as String? ?? json['access_token'] as String? ?? '',
-      tokenType: json['tokenType'] as String? ?? json['token_type'] as String? ?? '',
+      accessToken: json['access_token'] as String? ?? json['accessToken'] as String? ?? '',
+      tokenType: json['token_type'] as String? ?? json['tokenType'] as String? ?? '',
       role: json['role'] as String? ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'accessToken': accessToken,
-      'tokenType': tokenType,
+      'access_token': accessToken,
+      'token_type': tokenType,
       'role': role,
     };
   }

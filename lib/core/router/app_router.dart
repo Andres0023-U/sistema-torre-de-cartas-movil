@@ -1,6 +1,8 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../di/injection_container.dart';
 import '../../features/account/presentation/pages/account_page.dart';
 import '../../features/admin/presentation/pages/users_roles_page.dart';
@@ -24,9 +26,7 @@ class GoRouterRefreshStream extends ChangeNotifier {
 
   GoRouterRefreshStream(Stream<dynamic> stream) {
     notifyListeners();
-    _subscription = stream.asBroadcastStream().listen(
-          (_) => notifyListeners(),
-        );
+    _subscription = stream.asBroadcastStream().listen((_) => notifyListeners());
   }
 
   @override
@@ -54,46 +54,36 @@ bool _isRouteAllowedForRole(String location, UserRole? role) {
 
   final rules = <MapEntry<RegExp, List<UserRole>>>[
     // Specific routes first
-    MapEntry(
-      RegExp(r'^/tournaments/create$'),
-      [UserRole.organizer, UserRole.admin],
-    ),
-    MapEntry(
-      RegExp(r'^/tournaments/[^/]+/matches/[^/]+/result$'),
-      [UserRole.organizer],
-    ),
-    MapEntry(
-      RegExp(r'^/tournaments/[^/]+/rounds/[^/]+/deck$'),
-      [UserRole.player],
-    ),
-    MapEntry(
-      RegExp(r'^/tournaments/[^/]+$'),
-      [UserRole.player, UserRole.organizer, UserRole.admin],
-    ),
-    MapEntry(
-      RegExp(r'^/tournaments$'),
-      [UserRole.player, UserRole.organizer, UserRole.admin],
-    ),
-    MapEntry(
-      RegExp(r'^/decks(/.*)?$'),
-      [UserRole.player],
-    ),
-    MapEntry(
-      RegExp(r'^/ranking$'),
-      [UserRole.player, UserRole.organizer],
-    ),
-    MapEntry(
-      RegExp(r'^/admin/users$'),
-      [UserRole.admin],
-    ),
-    MapEntry(
-      RegExp(r'^/pending-account$'),
-      [UserRole.user],
-    ),
-    MapEntry(
-      RegExp(r'^/account(/.*)?$'),
-      [UserRole.player, UserRole.organizer, UserRole.admin, UserRole.user],
-    ),
+    MapEntry(RegExp(r'^/tournaments/create$'), [
+      UserRole.organizer,
+      UserRole.admin,
+    ]),
+    MapEntry(RegExp(r'^/tournaments/[^/]+/matches/[^/]+/result$'), [
+      UserRole.organizer,
+    ]),
+    MapEntry(RegExp(r'^/tournaments/[^/]+/rounds/[^/]+/deck$'), [
+      UserRole.player,
+    ]),
+    MapEntry(RegExp(r'^/tournaments/[^/]+$'), [
+      UserRole.player,
+      UserRole.organizer,
+      UserRole.admin,
+    ]),
+    MapEntry(RegExp(r'^/tournaments$'), [
+      UserRole.player,
+      UserRole.organizer,
+      UserRole.admin,
+    ]),
+    MapEntry(RegExp(r'^/decks(/.*)?$'), [UserRole.player]),
+    MapEntry(RegExp(r'^/ranking$'), [UserRole.player, UserRole.organizer]),
+    MapEntry(RegExp(r'^/admin/users$'), [UserRole.admin]),
+    MapEntry(RegExp(r'^/pending-account$'), [UserRole.user]),
+    MapEntry(RegExp(r'^/account(/.*)?$'), [
+      UserRole.player,
+      UserRole.organizer,
+      UserRole.admin,
+      UserRole.user,
+    ]),
   ];
 
   for (final rule in rules) {
@@ -130,10 +120,7 @@ GoRouter createRouter(Listenable refreshListenable) {
       return null;
     },
     routes: [
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const LoginPage(),
-      ),
+      GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
       ShellRoute(
         builder: (context, state, child) => MainShellPage(child: child),
         routes: [
