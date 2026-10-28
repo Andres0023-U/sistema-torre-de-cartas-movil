@@ -1,8 +1,6 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
 import '../di/injection_container.dart';
 import '../../features/account/presentation/pages/account_page.dart';
 import '../../features/admin/presentation/pages/users_roles_page.dart';
@@ -12,6 +10,7 @@ import '../../features/auth/presentation/bloc/auth_state.dart';
 import '../../features/auth/presentation/pages/change_password_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/pending_account_page.dart';
+import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/decks/presentation/pages/my_decks_page.dart';
 import '../../features/decks/presentation/pages/round_deck_page.dart';
 import '../../features/ranking/presentation/pages/ranking_page.dart';
@@ -26,7 +25,9 @@ class GoRouterRefreshStream extends ChangeNotifier {
 
   GoRouterRefreshStream(Stream<dynamic> stream) {
     notifyListeners();
-    _subscription = stream.asBroadcastStream().listen((_) => notifyListeners());
+    _subscription = stream.asBroadcastStream().listen(
+          (_) => notifyListeners(),
+        );
   }
 
   @override
@@ -54,36 +55,46 @@ bool _isRouteAllowedForRole(String location, UserRole? role) {
 
   final rules = <MapEntry<RegExp, List<UserRole>>>[
     // Specific routes first
-    MapEntry(RegExp(r'^/tournaments/create$'), [
-      UserRole.organizer,
-      UserRole.admin,
-    ]),
-    MapEntry(RegExp(r'^/tournaments/[^/]+/matches/[^/]+/result$'), [
-      UserRole.organizer,
-    ]),
-    MapEntry(RegExp(r'^/tournaments/[^/]+/rounds/[^/]+/deck$'), [
-      UserRole.player,
-    ]),
-    MapEntry(RegExp(r'^/tournaments/[^/]+$'), [
-      UserRole.player,
-      UserRole.organizer,
-      UserRole.admin,
-    ]),
-    MapEntry(RegExp(r'^/tournaments$'), [
-      UserRole.player,
-      UserRole.organizer,
-      UserRole.admin,
-    ]),
-    MapEntry(RegExp(r'^/decks(/.*)?$'), [UserRole.player]),
-    MapEntry(RegExp(r'^/ranking$'), [UserRole.player, UserRole.organizer]),
-    MapEntry(RegExp(r'^/admin/users$'), [UserRole.admin]),
-    MapEntry(RegExp(r'^/pending-account$'), [UserRole.user]),
-    MapEntry(RegExp(r'^/account(/.*)?$'), [
-      UserRole.player,
-      UserRole.organizer,
-      UserRole.admin,
-      UserRole.user,
-    ]),
+    MapEntry(
+      RegExp(r'^/tournaments/create$'),
+      [UserRole.organizer, UserRole.admin],
+    ),
+    MapEntry(
+      RegExp(r'^/tournaments/[^/]+/matches/[^/]+/result$'),
+      [UserRole.organizer],
+    ),
+    MapEntry(
+      RegExp(r'^/tournaments/[^/]+/rounds/[^/]+/deck$'),
+      [UserRole.player],
+    ),
+    MapEntry(
+      RegExp(r'^/tournaments/[^/]+$'),
+      [UserRole.player, UserRole.organizer, UserRole.admin],
+    ),
+    MapEntry(
+      RegExp(r'^/tournaments$'),
+      [UserRole.player, UserRole.organizer, UserRole.admin],
+    ),
+    MapEntry(
+      RegExp(r'^/decks(/.*)?$'),
+      [UserRole.player],
+    ),
+    MapEntry(
+      RegExp(r'^/ranking$'),
+      [UserRole.player, UserRole.organizer],
+    ),
+    MapEntry(
+      RegExp(r'^/admin/users$'),
+      [UserRole.admin],
+    ),
+    MapEntry(
+      RegExp(r'^/pending-account$'),
+      [UserRole.user],
+    ),
+    MapEntry(
+      RegExp(r'^/account(/.*)?$'),
+      [UserRole.player, UserRole.organizer, UserRole.admin, UserRole.user],
+    ),
   ];
 
   for (final rule in rules) {
@@ -97,14 +108,23 @@ bool _isRouteAllowedForRole(String location, UserRole? role) {
 
 GoRouter createRouter(Listenable refreshListenable) {
   return GoRouter(
-    initialLocation: '/login',
+    initialLocation: '/splash',
     refreshListenable: refreshListenable,
     redirect: (context, state) {
       final authState = sl<AuthBloc>().state;
       final role = authState.role;
       final isAuthenticated =
           authState.status == AuthStatus.authenticated && role != null;
+      final isSplashRoute = state.matchedLocation == '/splash';
       final isAuthRoute = state.matchedLocation == '/login';
+
+      if (authState.status == AuthStatus.initial) {
+        return isSplashRoute ? null : '/splash';
+      }
+
+      if (isSplashRoute) {
+        return isAuthenticated ? _getHomeRouteForRole(role) : '/login';
+      }
 
       if (!isAuthenticated) {
         return isAuthRoute ? null : '/login';
@@ -114,13 +134,22 @@ GoRouter createRouter(Listenable refreshListenable) {
       if (isAuthRoute || state.matchedLocation == '/') {
         return homeRoute;
       }
+
       if (!_isRouteAllowedForRole(state.matchedLocation, role)) {
         return homeRoute;
       }
+
       return null;
     },
     routes: [
-      GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) => const SplashPage(),
+      ),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginPage(),
+      ),
       ShellRoute(
         builder: (context, state, child) => MainShellPage(child: child),
         routes: [

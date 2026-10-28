@@ -4,6 +4,14 @@ import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_data_source.dart';
 
+class AuthExpiredException implements Exception {
+  final String message;
+  AuthExpiredException([this.message = "Tu sesión expiró. Inicia sesión de nuevo."]);
+
+  @override
+  String toString() => message;
+}
+
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
 
@@ -29,6 +37,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
   String _translateError(Object error) {
     if (error is DioException) {
+      final statusCode = error.response?.statusCode;
+      if (statusCode == 401 || statusCode == 403) {
+        throw AuthExpiredException();
+      }
       if (error.response?.data is Map) {
         final data = error.response?.data as Map<String, dynamic>;
         if (data['detail'] != null) {

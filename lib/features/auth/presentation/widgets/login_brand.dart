@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
+import 'crest_badge.dart';
 
 class LoginBrand extends StatelessWidget {
   const LoginBrand({super.key});
@@ -10,45 +11,7 @@ class LoginBrand extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Semantics(
-          label: 'Escudo de Torre de Cartas',
-          image: true,
-          child: Container(
-            width: 128,
-            height: 128,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.parchment,
-              border: Border.all(
-                color: AppColors.gold,
-                width: 2.0,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.gold.withValues(alpha: 0.30),
-                  blurRadius: 32,
-                  spreadRadius: 1,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            alignment: Alignment.center,
-            child: Image.asset(
-              'assets/images/crest.png',
-              width: 84,
-              height: 84,
-              fit: BoxFit.contain,
-              filterQuality: FilterQuality.high,
-              errorBuilder: (context, error, stackTrace) {
-                return const Icon(
-                  Icons.shield,
-                  size: 72,
-                  color: AppColors.gold,
-                );
-              },
-            ),
-          ),
-        ),
+        const CrestBadge(),
         const SizedBox(height: 20),
         Text(
           'TORRE',
