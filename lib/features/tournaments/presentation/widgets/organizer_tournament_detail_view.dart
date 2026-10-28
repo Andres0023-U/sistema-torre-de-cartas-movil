@@ -1,177 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+
+import '../../../../core/theme/app_colors.dart';
+import '../../domain/entities/round_entity.dart';
+import '../../domain/entities/tournament_entity.dart';
+import '../../domain/entities/tournament_player_entity.dart';
+import 'tournament_detail_content.dart';
 
 class OrganizerTournamentDetailView extends StatelessWidget {
-  final String tournamentId;
+  final TournamentEntity tournament;
+  final List<TournamentPlayerEntity> players;
+  final List<RoundEntity> rounds;
   final bool readOnly;
+  final Future<void> Function() onRefresh;
 
   const OrganizerTournamentDetailView({
     super.key,
-    required this.tournamentId,
+    required this.tournament,
+    required this.players,
+    required this.rounds,
     required this.readOnly,
+    required this.onRefresh,
   });
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Column(
-        children: [
-          if (readOnly)
-            Container(
-              color: Colors.amber.shade100,
-              width: double.infinity,
-              padding: const EdgeInsets.all(12.0),
-              child: const Text(
-                'Vista de consulta: solo el organizador gestiona rondas y resultados.',
-                style: TextStyle(color: Colors.black87),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          const TabBar(
-            tabs: [
-              Tab(text: 'Ronda 2'),
-              Tab(text: 'Inscritos'),
-            ],
-          ),
-          Expanded(
-            child: TabBarView(
-              children: [
-                _buildRoundTab(context),
-                _buildPlayersTab(),
-              ],
+    return Column(
+      children: [
+        if (readOnly)
+          Container(
+            color: AppColors.goldSoft,
+            width: double.infinity,
+            padding: const EdgeInsets.all(12.0),
+            child: const Text(
+              'Vista de consulta: solo el organizador gestiona rondas y resultados.',
+              style: TextStyle(color: AppColors.ink),
+              textAlign: TextAlign.center,
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRoundTab(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Card(
-            child: ListTile(
-              title: const Text('Mesa 1'),
-              subtitle: const Text('Jugador A vs Jugador B (Resultado: 2-0)'),
-              trailing: const Chip(
-                label: Text('Finalizada'),
-                backgroundColor: Colors.greenAccent,
-              ),
-            ),
+        Expanded(
+          child: TournamentDetailContent(
+            tournament: tournament,
+            players: players,
+            rounds: rounds,
+            onRefresh: onRefresh,
           ),
-          Card(
-            child: ListTile(
-              title: const Text('Mesa 2'),
-              subtitle: const Text('Jugador C vs Jugador D'),
-              trailing: !readOnly
-                  ? ElevatedButton(
-                      onPressed: () {
-                        context.push('/tournaments/$tournamentId/matches/1/result');
-                      },
-                      child: const Text('Registrar resultado'),
-                    )
-                  : const Chip(
-                      label: Text('Pendiente'),
-                      backgroundColor: Colors.amberAccent,
-                    ),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              title: const Text('Mesa 3'),
-              subtitle: const Text('Jugador E vs Jugador F'),
-              trailing: !readOnly
-                  ? ElevatedButton(
-                      onPressed: () {
-                        context.push('/tournaments/$tournamentId/matches/2/result');
-                      },
-                      child: const Text('Registrar resultado'),
-                    )
-                  : const Chip(
-                      label: Text('Pendiente'),
-                      backgroundColor: Colors.amberAccent,
-                    ),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              title: const Text('Mesa 4'),
-              subtitle: const Text('Jugador G vs Jugador H'),
-              trailing: !readOnly
-                  ? ElevatedButton(
-                      onPressed: () {
-                        context.push('/tournaments/$tournamentId/matches/3/result');
-                      },
-                      child: const Text('Registrar resultado'),
-                    )
-                  : const Chip(
-                      label: Text('Pendiente'),
-                      backgroundColor: Colors.amberAccent,
-                    ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          if (!readOnly) ...[
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () {
-                  // TODO: Crear partida manual
-                },
-                child: const Text('Crear partida manual'),
-              ),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  // TODO: Generar emparejamientos automáticos
-                },
-                child: const Text('Generar emparejamientos automáticos'),
-              ),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: () {
-                  // TODO: Siguiente ronda
-                },
-                child: const Text('Siguiente ronda'),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPlayersTab() {
-    final players = List.generate(8, (index) => 'Jugador ${index + 1}');
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
-      itemCount: players.length,
-      itemBuilder: (context, index) {
-        return Card(
-          child: ListTile(
-            leading: CircleAvatar(
-              child: Text('${index + 1}'),
-            ),
-            title: Text(players[index]),
-            subtitle: const Text('Estado: Inscripto'),
-          ),
-        );
-      },
+        ),
+      ],
     );
   }
 }

@@ -1,123 +1,78 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../../../../core/theme/app_colors.dart';
+import '../../domain/entities/round_entity.dart';
+import '../../domain/entities/tournament_entity.dart';
+import '../../domain/entities/tournament_player_entity.dart';
+import 'tournament_detail_content.dart';
 
 class PlayerTournamentDetailView extends StatelessWidget {
-  final String tournamentId;
+  final TournamentEntity tournament;
+  final List<TournamentPlayerEntity> players;
+  final List<RoundEntity> rounds;
+  final Future<void> Function() onRefresh;
 
   const PlayerTournamentDetailView({
     super.key,
-    required this.tournamentId,
+    required this.tournament,
+    required this.players,
+    required this.rounds,
+    required this.onRefresh,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Sección "Tu partida"
-          Card(
-            elevation: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Tu partida',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Ronda 2 · Mesa 3',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.push('/tournaments/$tournamentId/rounds/1/deck');
-                    },
-                    child: const Text('Cambiar mazo de la ronda'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
+    return TournamentDetailContent(
+      tournament: tournament,
+      players: players,
+      rounds: rounds,
+      onRefresh: onRefresh,
+      roundsFooter: _buildPointsCard(),
+    );
+  }
 
-          // Sección "Rondas"
-          const Text(
-            'Rondas',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Card(
-            child: ListTile(
-              title: Text('Ronda 1'),
-              subtitle: Text('Victoria 2-1'),
-              trailing: Chip(
-                label: Text('Finalizada'),
-                backgroundColor: Colors.greenAccent,
+  // Sección fija "Puntos por partida"
+  Widget _buildPointsCard() {
+    final bodyStyle = GoogleFonts.sourceSans3(
+      fontSize: 14,
+      color: AppColors.ink,
+    );
+    return Card(
+      color: AppColors.parchment,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: AppColors.line.withValues(alpha: 0.6)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Puntos por partida',
+              style: GoogleFonts.sourceSans3(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.ink,
               ),
             ),
-          ),
-          const Card(
-            child: ListTile(
-              title: Text('Ronda 2'),
-              subtitle: Text('Mesa 3'),
-              trailing: Chip(
-                label: Text('En curso'),
-                backgroundColor: Colors.amberAccent,
-              ),
+            const SizedBox(height: 8),
+            Text('Victoria en tiempo normal: 3 pts.', style: bodyStyle),
+            const SizedBox(height: 4),
+            Text(
+              'Victoria en presión por tiempo con vida mayor a 0: 2 pts.',
+              style: bodyStyle,
             ),
-          ),
-          const Card(
-            child: ListTile(
-              title: Text('Ronda 3'),
-              subtitle: Text('Por comenzar'),
-              trailing: Chip(
-                label: Text('Pendiente'),
-                backgroundColor: Colors.grey,
-              ),
+            const SizedBox(height: 4),
+            Text(
+              'Victoria en presión por tiempo con vida de 0 o menos: 1 pt.',
+              style: bodyStyle,
             ),
-          ),
-          const SizedBox(height: 16),
-
-          // Sección "Puntos por partida"
-          const Card(
-            elevation: 1,
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Puntos por partida',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text('Victoria en tiempo normal: 3 pts.'),
-                  SizedBox(height: 4),
-                  Text('Victoria en presión por tiempo con vida mayor a 0: 2 pts.'),
-                  SizedBox(height: 4),
-                  Text('Victoria en presión por tiempo con vida de 0 o menos: 1 pt.'),
-                  SizedBox(height: 4),
-                  Text('Derrota: 0 pts.'),
-                ],
-              ),
-            ),
-          ),
-        ],
+            const SizedBox(height: 4),
+            Text('Derrota: 0 pts.', style: bodyStyle),
+          ],
+        ),
       ),
     );
   }

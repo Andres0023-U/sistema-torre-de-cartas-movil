@@ -11,8 +11,8 @@ class RoundModel extends RoundEntity {
 
   factory RoundModel.fromJson(Map<String, dynamic> json) {
     return RoundModel(
-      roundId: json['roundId'] as int? ?? json['id'] as int? ?? 0,
-      tournamentId: json['tournamentId'] as int? ?? 0,
+      roundId: json['round_id'] as int? ?? 0,
+      tournamentId: json['tournament_id'] as int? ?? 0,
       number: json['number'] as int? ?? 0,
       name: json['name'] as String? ?? '',
       status: json['status'] as String?,
@@ -21,8 +21,8 @@ class RoundModel extends RoundEntity {
 
   Map<String, dynamic> toJson() {
     return {
-      'roundId': roundId,
-      'tournamentId': tournamentId,
+      'round_id': roundId,
+      'tournament_id': tournamentId,
       'number': number,
       'name': name,
       if (status != null) 'status': status,

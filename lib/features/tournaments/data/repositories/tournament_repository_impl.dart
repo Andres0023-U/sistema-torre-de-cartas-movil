@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+import '../../domain/entities/round_entity.dart';
 import '../../domain/entities/tournament_entity.dart';
+import '../../domain/entities/tournament_player_entity.dart';
 import '../../domain/repositories/tournament_repository.dart';
 import '../datasources/tournament_remote_data_source.dart';
 
@@ -12,6 +14,26 @@ class TournamentRepositoryImpl implements TournamentRepository {
   Future<List<TournamentEntity>> getTournaments() async {
     try {
       return await remoteDataSource.getTournaments();
+    } catch (e) {
+      throw Exception(_translateError(e));
+    }
+  }
+
+  @override
+  Future<List<TournamentPlayerEntity>> getTournamentPlayers(
+    int tournamentId,
+  ) async {
+    try {
+      return await remoteDataSource.getTournamentPlayers(tournamentId);
+    } catch (e) {
+      throw Exception(_translateError(e));
+    }
+  }
+
+  @override
+  Future<List<RoundEntity>> getTournamentRounds(int tournamentId) async {
+    try {
+      return await remoteDataSource.getTournamentRounds(tournamentId);
     } catch (e) {
       throw Exception(_translateError(e));
     }

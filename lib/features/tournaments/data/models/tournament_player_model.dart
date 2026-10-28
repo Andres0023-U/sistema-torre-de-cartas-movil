@@ -8,14 +8,14 @@ class TournamentPlayerModel extends TournamentPlayerEntity {
 
   factory TournamentPlayerModel.fromJson(Map<String, dynamic> json) {
     return TournamentPlayerModel(
-      playerId: json['playerId'] as int? ?? 0,
+      playerId: json['player_id'] as int? ?? 0,
       name: json['name'] as String? ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'playerId': playerId,
+      'player_id': playerId,
       'name': name,
     };
   }

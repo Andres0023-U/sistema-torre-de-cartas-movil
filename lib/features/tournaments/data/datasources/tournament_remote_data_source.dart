@@ -1,8 +1,12 @@
 import '../../../../core/network/dio_client.dart';
+import '../models/round_model.dart';
 import '../models/tournament_model.dart';
+import '../models/tournament_player_model.dart';
 
 abstract class TournamentRemoteDataSource {
   Future<List<TournamentModel>> getTournaments();
+  Future<List<TournamentPlayerModel>> getTournamentPlayers(int tournamentId);
+  Future<List<RoundModel>> getTournamentRounds(int tournamentId);
 }
 
 class TournamentRemoteDataSourceImpl implements TournamentRemoteDataSource {
@@ -16,6 +20,28 @@ class TournamentRemoteDataSourceImpl implements TournamentRemoteDataSource {
     final rawList = response.data as List<dynamic>? ?? [];
     return rawList
         .map((e) => TournamentModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  @override
+  Future<List<TournamentPlayerModel>> getTournamentPlayers(
+    int tournamentId,
+  ) async {
+    final response =
+        await dioClient.dio.get('/tournaments/$tournamentId/players');
+    final rawList = response.data as List<dynamic>? ?? [];
+    return rawList
+        .map((e) => TournamentPlayerModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  @override
+  Future<List<RoundModel>> getTournamentRounds(int tournamentId) async {
+    final response =
+        await dioClient.dio.get('/tournaments/$tournamentId/rounds');
+    final rawList = response.data as List<dynamic>? ?? [];
+    return rawList
+        .map((e) => RoundModel.fromJson(e as Map<String, dynamic>))
         .toList();
   }
 }
