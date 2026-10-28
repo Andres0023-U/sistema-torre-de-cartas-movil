@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 class TournamentEntity extends Equatable {
   final int tournamentId;
   final String name;
-  final String date;
+  final DateTime date;
   final String format;
   final int numPlayers;
   final String status;

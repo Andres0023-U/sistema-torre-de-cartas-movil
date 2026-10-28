@@ -14,6 +14,10 @@ import '../../features/ranking/data/repositories/ranking_repository_impl.dart';
 import '../../features/ranking/domain/repositories/ranking_repository.dart';
 import '../../features/ranking/domain/usecases/get_ranking_usecase.dart';
 import '../../features/ranking/presentation/bloc/ranking_bloc.dart';
+import '../../features/tournaments/data/datasources/tournament_remote_data_source.dart';
+import '../../features/tournaments/data/repositories/tournament_repository_impl.dart';
+import '../../features/tournaments/domain/repositories/tournament_repository.dart';
+import '../../features/tournaments/domain/usecases/get_tournaments_usecase.dart';
 import '../../features/tournaments/presentation/bloc/tournaments_bloc.dart';
 import '../network/dio_client.dart';
 import '../network/token_holder.dart';
@@ -67,6 +71,18 @@ void initDependencies() {
     () => GetRankingUseCase(repository: sl<RankingRepository>()),
   );
 
+  // Tournaments data & domain
+  sl.registerLazySingleton<TournamentRemoteDataSource>(
+    () => TournamentRemoteDataSourceImpl(dioClient: sl<DioClient>()),
+  );
+  sl.registerLazySingleton<TournamentRepository>(
+    () => TournamentRepositoryImpl(
+        remoteDataSource: sl<TournamentRemoteDataSource>()),
+  );
+  sl.registerLazySingleton<GetTournamentsUseCase>(
+    () => GetTournamentsUseCase(repository: sl<TournamentRepository>()),
+  );
+
   sl.registerLazySingleton<AuthBloc>(
     () => AuthBloc(
       loginUseCase: sl<LoginUseCase>(),
@@ -75,7 +91,9 @@ void initDependencies() {
     ),
   );
 
-  sl.registerFactory<TournamentsBloc>(() => TournamentsBloc());
+  sl.registerFactory<TournamentsBloc>(
+    () => TournamentsBloc(getTournamentsUseCase: sl<GetTournamentsUseCase>()),
+  );
   sl.registerFactory<DecksBloc>(() => DecksBloc());
   sl.registerFactory<RankingBloc>(
     () => RankingBloc(getRankingUseCase: sl<GetRankingUseCase>()),

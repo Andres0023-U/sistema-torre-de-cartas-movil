@@ -12,26 +12,33 @@ class TournamentModel extends TournamentEntity {
   });
 
   factory TournamentModel.fromJson(Map<String, dynamic> json) {
+    DateTime parsedDate;
+    try {
+      parsedDate = DateTime.parse(json['date'] as String? ?? '');
+    } catch (_) {
+      parsedDate = DateTime(2000);
+    }
+
     return TournamentModel(
-      tournamentId: json['tournamentId'] as int? ?? json['id'] as int? ?? 0,
+      tournamentId: json['tournament_id'] as int? ?? 0,
       name: json['name'] as String? ?? '',
-      date: json['date'] as String? ?? '',
+      date: parsedDate,
       format: json['format'] as String? ?? '',
-      numPlayers: json['numPlayers'] as int? ?? 0,
+      numPlayers: json['num_players'] as int? ?? 0,
       status: json['status'] as String? ?? '',
-      organizerId: json['organizerId'] as int? ?? 0,
+      organizerId: json['organizer_id'] as int? ?? 0,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'tournamentId': tournamentId,
+      'tournament_id': tournamentId,
       'name': name,
-      'date': date,
+      'date': date.toIso8601String(),
       'format': format,
-      'numPlayers': numPlayers,
+      'num_players': numPlayers,
       'status': status,
-      'organizerId': organizerId,
+      'organizer_id': organizerId,
     };
   }
 }
