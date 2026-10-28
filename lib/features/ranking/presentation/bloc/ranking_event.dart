@@ -7,4 +7,4 @@ abstract class RankingEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class LoadRankingEvent extends RankingEvent {}
+class RankingRequested extends RankingEvent {}

@@ -81,7 +81,7 @@ bool _isRouteAllowedForRole(String location, UserRole? role) {
     ),
     MapEntry(
       RegExp(r'^/ranking$'),
-      [UserRole.player, UserRole.organizer],
+      [UserRole.player, UserRole.organizer, UserRole.admin],
     ),
     MapEntry(
       RegExp(r'^/admin/users$'),

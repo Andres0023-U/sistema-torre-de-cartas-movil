@@ -44,6 +44,7 @@ class MainShellPage extends StatelessWidget {
         return const [
           NavigationItem(label: 'Usuarios', icon: Icons.supervisor_account, route: '/admin/users'),
           NavigationItem(label: 'Torneos', icon: Icons.emoji_events, route: '/tournaments'),
+          NavigationItem(label: 'Ranking', icon: Icons.leaderboard, route: '/ranking'),
           NavigationItem(label: 'Cuenta', icon: Icons.person, route: '/account'),
         ];
       case UserRole.user:

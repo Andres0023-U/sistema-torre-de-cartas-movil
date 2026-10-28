@@ -8,6 +8,7 @@ class GlobalRankingEntryEntity extends Equatable {
   final int won;
   final int lost;
   final int points;
+  final DateTime? lastResultDate;
 
   const GlobalRankingEntryEntity({
     required this.position,
@@ -17,6 +18,7 @@ class GlobalRankingEntryEntity extends Equatable {
     required this.won,
     required this.lost,
     required this.points,
+    this.lastResultDate,
   });
 
   @override
@@ -28,5 +30,6 @@ class GlobalRankingEntryEntity extends Equatable {
         won,
         lost,
         points,
+        lastResultDate,
       ];
 }

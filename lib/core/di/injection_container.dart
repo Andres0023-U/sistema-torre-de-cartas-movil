@@ -9,6 +9,10 @@ import '../../features/auth/domain/usecases/logout_usecase.dart';
 import '../../features/auth/domain/usecases/restore_session_usecase.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/decks/presentation/bloc/decks_bloc.dart';
+import '../../features/ranking/data/datasources/ranking_remote_data_source.dart';
+import '../../features/ranking/data/repositories/ranking_repository_impl.dart';
+import '../../features/ranking/domain/repositories/ranking_repository.dart';
+import '../../features/ranking/domain/usecases/get_ranking_usecase.dart';
 import '../../features/ranking/presentation/bloc/ranking_bloc.dart';
 import '../../features/tournaments/presentation/bloc/tournaments_bloc.dart';
 import '../network/dio_client.dart';
@@ -52,6 +56,17 @@ void initDependencies() {
     ),
   );
 
+  // Ranking data & domain
+  sl.registerLazySingleton<RankingRemoteDataSource>(
+    () => RankingRemoteDataSourceImpl(dioClient: sl<DioClient>()),
+  );
+  sl.registerLazySingleton<RankingRepository>(
+    () => RankingRepositoryImpl(remoteDataSource: sl<RankingRemoteDataSource>()),
+  );
+  sl.registerLazySingleton<GetRankingUseCase>(
+    () => GetRankingUseCase(repository: sl<RankingRepository>()),
+  );
+
   sl.registerLazySingleton<AuthBloc>(
     () => AuthBloc(
       loginUseCase: sl<LoginUseCase>(),
@@ -62,7 +77,9 @@ void initDependencies() {
 
   sl.registerFactory<TournamentsBloc>(() => TournamentsBloc());
   sl.registerFactory<DecksBloc>(() => DecksBloc());
-  sl.registerFactory<RankingBloc>(() => RankingBloc());
+  sl.registerFactory<RankingBloc>(
+    () => RankingBloc(getRankingUseCase: sl<GetRankingUseCase>()),
+  );
   sl.registerFactory<AccountBloc>(() => AccountBloc());
   sl.registerFactory<AdminBloc>(() => AdminBloc());
 }
