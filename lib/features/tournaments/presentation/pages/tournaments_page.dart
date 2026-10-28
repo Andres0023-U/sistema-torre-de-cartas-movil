@@ -10,6 +10,7 @@ import '../../domain/entities/tournament_entity.dart';
 import '../bloc/tournaments_bloc.dart';
 import '../bloc/tournaments_event.dart';
 import '../bloc/tournaments_state.dart';
+import '../utils/tournament_formatters.dart';
 
 class TournamentsPage extends StatefulWidget {
   const TournamentsPage({super.key});
@@ -22,59 +23,10 @@ class _TournamentsPageState extends State<TournamentsPage> {
   String _selectedFilter = 'Todos';
   String _searchQuery = '';
 
-  static const _monthNames = [
-    '', 'ene', 'feb', 'mar', 'abr', 'may', 'jun',
-    'jul', 'ago', 'sep', 'oct', 'nov', 'dic',
-  ];
-
   @override
   void initState() {
     super.initState();
     context.read<TournamentsBloc>().add(const TournamentsRequested());
-  }
-
-  String _formatDate(DateTime date) {
-    final month = _monthNames[date.month];
-    return '${date.day} $month ${date.year}';
-  }
-
-  String _statusLabel(String status) {
-    switch (status) {
-      case 'pending':
-        return 'Pendiente';
-      case 'in_progress':
-        return 'En curso';
-      case 'finished':
-        return 'Finalizado';
-      default:
-        return status;
-    }
-  }
-
-  Color _statusColor(String status) {
-    switch (status) {
-      case 'pending':
-        return const Color(0xFF3B6FA0); // azul medio
-      case 'in_progress':
-        return AppColors.gold;
-      case 'finished':
-        return AppColors.muted;
-      default:
-        return AppColors.muted;
-    }
-  }
-
-  Color _statusTextColor(String status) {
-    switch (status) {
-      case 'pending':
-        return Colors.white;
-      case 'in_progress':
-        return AppColors.navy;
-      case 'finished':
-        return Colors.white;
-      default:
-        return Colors.white;
-    }
   }
 
   /// Filtra la lista completa según búsqueda y chip seleccionado.
@@ -345,9 +297,9 @@ class _TournamentsPageState extends State<TournamentsPage> {
     BuildContext context,
     TournamentEntity tournament,
   ) {
-    final label = _statusLabel(tournament.status);
-    final chipBg = _statusColor(tournament.status);
-    final chipText = _statusTextColor(tournament.status);
+    final label = tournamentStatusLabel(tournament.status);
+    final chipBg = tournamentStatusColor(tournament.status);
+    final chipText = tournamentStatusTextColor(tournament.status);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -404,7 +356,7 @@ class _TournamentsPageState extends State<TournamentsPage> {
                       size: 14, color: AppColors.muted),
                   const SizedBox(width: 4),
                   Text(
-                    _formatDate(tournament.date),
+                    formatTournamentDate(tournament.date),
                     style: GoogleFonts.sourceSans3(
                       fontSize: 13,
                       color: AppColors.muted,

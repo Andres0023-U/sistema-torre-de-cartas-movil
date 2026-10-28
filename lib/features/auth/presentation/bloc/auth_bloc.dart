@@ -25,6 +25,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(AuthState(
             status: AuthStatus.authenticated,
             role: user.role,
+            userId: int.tryParse(user.id.toString()),
             name: user.name,
             email: user.email,
           ));
@@ -51,6 +52,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthState(
           status: AuthStatus.authenticated,
           role: user.role,
+          userId: int.tryParse(user.id.toString()),
           name: user.name,
           email: user.email,
         ));

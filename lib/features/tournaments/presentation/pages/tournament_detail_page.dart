@@ -69,7 +69,27 @@ class _TournamentDetailBodyState extends State<_TournamentDetailBody> {
       body: SafeArea(
         child: _id == null
             ? _buildMessage('No se encontró el torneo')
-            : BlocBuilder<TournamentDetailBloc, TournamentDetailState>(
+            : BlocListener<TournamentDetailBloc, TournamentDetailState>(
+                listenWhen: (previous, current) =>
+                    current is TournamentDetailLoaded &&
+                    previous != current &&
+                    (current.successMessage != null ||
+                        current.errorMessage != null),
+                listener: (context, state) {
+                  if (state is! TournamentDetailLoaded) return;
+                  final isError = state.errorMessage != null;
+                  final message = state.errorMessage ?? state.successMessage!;
+                  ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(
+                      SnackBar(
+                        content: Text(message),
+                        backgroundColor:
+                            isError ? AppColors.error : AppColors.navy,
+                      ),
+                    );
+                },
+                child: BlocBuilder<TournamentDetailBloc, TournamentDetailState>(
                 builder: (context, state) {
                   if (state is TournamentDetailInitial ||
                       state is TournamentDetailLoading) {
@@ -132,6 +152,7 @@ class _TournamentDetailBodyState extends State<_TournamentDetailBody> {
                           players: state.players,
                           rounds: state.rounds,
                           readOnly: false,
+                          isStarting: state.isStarting,
                           onRefresh: _refresh,
                         );
                       case UserRole.admin:
@@ -149,6 +170,7 @@ class _TournamentDetailBodyState extends State<_TournamentDetailBody> {
 
                   return const SizedBox.shrink();
                 },
+              ),
               ),
       ),
     );

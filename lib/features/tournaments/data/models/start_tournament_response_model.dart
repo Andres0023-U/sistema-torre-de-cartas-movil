@@ -9,17 +9,17 @@ class StartTournamentResponseModel extends StartTournamentResponseEntity {
 
   factory StartTournamentResponseModel.fromJson(Map<String, dynamic> json) {
     return StartTournamentResponseModel(
-      tournamentId: json['tournamentId'] as int? ?? 0,
+      tournamentId: json['tournament_id'] as int? ?? 0,
       status: json['status'] as String? ?? '',
-      roundId: json['roundId'] as int? ?? 0,
+      roundId: json['round_id'] as int? ?? 0,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'tournamentId': tournamentId,
+      'tournament_id': tournamentId,
       'status': status,
-      'roundId': roundId,
+      'round_id': roundId,
     };
   }
 }

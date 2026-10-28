@@ -16,3 +16,7 @@ class TournamentDetailRequested extends TournamentDetailEvent {
   List<Object?> get props => [tournamentId];
 }
 
+class TournamentStartRequested extends TournamentDetailEvent {
+  const TournamentStartRequested();
+}
+

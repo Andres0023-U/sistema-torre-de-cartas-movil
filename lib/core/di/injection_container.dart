@@ -20,6 +20,7 @@ import '../../features/tournaments/domain/repositories/tournament_repository.dar
 import '../../features/tournaments/domain/usecases/get_tournament_players_usecase.dart';
 import '../../features/tournaments/domain/usecases/get_tournament_rounds_usecase.dart';
 import '../../features/tournaments/domain/usecases/get_tournaments_usecase.dart';
+import '../../features/tournaments/domain/usecases/start_tournament_usecase.dart';
 import '../../features/tournaments/presentation/bloc/tournament_detail_bloc.dart';
 import '../../features/tournaments/presentation/bloc/tournaments_bloc.dart';
 import '../network/dio_client.dart';
@@ -91,6 +92,9 @@ void initDependencies() {
   sl.registerLazySingleton<GetTournamentRoundsUseCase>(
     () => GetTournamentRoundsUseCase(repository: sl<TournamentRepository>()),
   );
+  sl.registerLazySingleton<StartTournamentUseCase>(
+    () => StartTournamentUseCase(repository: sl<TournamentRepository>()),
+  );
 
   sl.registerLazySingleton<AuthBloc>(
     () => AuthBloc(
@@ -108,6 +112,7 @@ void initDependencies() {
       getTournamentsUseCase: sl<GetTournamentsUseCase>(),
       getTournamentPlayersUseCase: sl<GetTournamentPlayersUseCase>(),
       getTournamentRoundsUseCase: sl<GetTournamentRoundsUseCase>(),
+      startTournamentUseCase: sl<StartTournamentUseCase>(),
     ),
   );
   sl.registerFactory<DecksBloc>(() => DecksBloc());
