@@ -10,8 +10,8 @@ class PlayerWithUserModel extends PlayerWithUserEntity {
 
   factory PlayerWithUserModel.fromJson(Map<String, dynamic> json) {
     return PlayerWithUserModel(
-      playerId: json['playerId'] as int? ?? 0,
-      userId: json['userId'] as int? ?? 0,
+      playerId: json['player_id'] as int? ?? 0,
+      userId: json['user_id'] as int? ?? 0,
       name: json['name'] as String? ?? '',
       email: json['email'] as String? ?? '',
     );
@@ -19,10 +19,11 @@ class PlayerWithUserModel extends PlayerWithUserEntity {
 
   Map<String, dynamic> toJson() {
     return {
-      'playerId': playerId,
-      'userId': userId,
+      'player_id': playerId,
+      'user_id': userId,
       'name': name,
       'email': email,
     };
   }
 }
+

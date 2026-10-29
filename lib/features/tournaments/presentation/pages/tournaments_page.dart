@@ -350,37 +350,53 @@ class _TournamentsPageState extends State<TournamentsPage> {
               ),
               const SizedBox(height: 8),
               // Fecha, formato y jugadores
-              Row(
+              Wrap(
+                spacing: 16,
+                runSpacing: 6,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  const Icon(Icons.calendar_today,
-                      size: 14, color: AppColors.muted),
-                  const SizedBox(width: 4),
-                  Text(
-                    formatTournamentDate(tournament.date),
-                    style: GoogleFonts.sourceSans3(
-                      fontSize: 13,
-                      color: AppColors.muted,
-                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.calendar_today,
+                          size: 14, color: AppColors.muted),
+                      const SizedBox(width: 4),
+                      Text(
+                        formatTournamentDate(tournament.date),
+                        style: GoogleFonts.sourceSans3(
+                          fontSize: 13,
+                          color: AppColors.muted,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 16),
-                  const Icon(Icons.style, size: 14, color: AppColors.muted),
-                  const SizedBox(width: 4),
-                  Text(
-                    tournament.format,
-                    style: GoogleFonts.sourceSans3(
-                      fontSize: 13,
-                      color: AppColors.muted,
-                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.style, size: 14, color: AppColors.muted),
+                      const SizedBox(width: 4),
+                      Text(
+                        tournament.format,
+                        style: GoogleFonts.sourceSans3(
+                          fontSize: 13,
+                          color: AppColors.muted,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 16),
-                  const Icon(Icons.people, size: 14, color: AppColors.muted),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${tournament.numPlayers} jugadores',
-                    style: GoogleFonts.sourceSans3(
-                      fontSize: 13,
-                      color: AppColors.muted,
-                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.people, size: 14, color: AppColors.muted),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${tournament.numPlayers} jugadores',
+                        style: GoogleFonts.sourceSans3(
+                          fontSize: 13,
+                          color: AppColors.muted,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

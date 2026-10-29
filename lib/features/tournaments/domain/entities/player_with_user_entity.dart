@@ -16,3 +16,4 @@ class PlayerWithUserEntity extends Equatable {
   @override
   List<Object?> get props => [playerId, userId, name, email];
 }
+

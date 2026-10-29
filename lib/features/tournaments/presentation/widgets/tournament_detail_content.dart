@@ -18,6 +18,9 @@ class TournamentDetailContent extends StatelessWidget {
   /// Widget opcional que se muestra al final de la pestaña "Rondas".
   final Widget? roundsFooter;
 
+  /// Widget opcional que se muestra al inicio de la pestaña "Inscritos".
+  final Widget? playersHeader;
+
   const TournamentDetailContent({
     super.key,
     required this.tournament,
@@ -25,6 +28,7 @@ class TournamentDetailContent extends StatelessWidget {
     required this.rounds,
     required this.onRefresh,
     this.roundsFooter,
+    this.playersHeader,
   });
 
   @override
@@ -130,35 +134,40 @@ class TournamentDetailContent extends StatelessWidget {
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-        children: players.isEmpty
-            ? [_buildEmptyMessage('Aún no hay jugadores inscritos')]
-            : [
-                for (final player in players)
-                  Card(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    color: AppColors.parchment,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(
-                        color: AppColors.line.withValues(alpha: 0.6),
-                      ),
-                    ),
-                    child: ListTile(
-                      leading: const CircleAvatar(
-                        backgroundColor: AppColors.navy,
-                        child: Icon(Icons.person, color: Colors.white),
-                      ),
-                      title: Text(
-                        player.name,
-                        style: GoogleFonts.sourceSans3(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.ink,
-                        ),
-                      ),
+        children: [
+          if (playersHeader != null) ...[
+            playersHeader!,
+            const SizedBox(height: 12),
+          ],
+          if (players.isEmpty)
+            _buildEmptyMessage('Aún no hay jugadores inscritos')
+          else
+            for (final player in players)
+              Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                color: AppColors.parchment,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(
+                    color: AppColors.line.withValues(alpha: 0.6),
+                  ),
+                ),
+                child: ListTile(
+                  leading: const CircleAvatar(
+                    backgroundColor: AppColors.navy,
+                    child: Icon(Icons.person, color: Colors.white),
+                  ),
+                  title: Text(
+                    player.name,
+                    style: GoogleFonts.sourceSans3(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.ink,
                     ),
                   ),
-              ],
+                ),
+              ),
+        ],
       ),
     );
   }

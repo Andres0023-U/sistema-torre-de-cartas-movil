@@ -31,22 +31,29 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       return await remoteDataSource.getMe();
     } catch (e) {
+      if (e is DioException && e.response?.statusCode == 401) {
+        throw AuthExpiredException();
+      }
       throw Exception(_translateError(e));
     }
   }
 
   String _translateError(Object error) {
     if (error is DioException) {
+      final isLogin = error.requestOptions.path.contains('/auth/login');
       final statusCode = error.response?.statusCode;
-      if (statusCode == 401 || statusCode == 403) {
-        throw AuthExpiredException();
-      }
+
       if (error.response?.data is Map) {
         final data = error.response?.data as Map<String, dynamic>;
         if (data['detail'] != null) {
           return data['detail'].toString();
         }
       }
+
+      if (!isLogin && statusCode == 401) {
+        return "Tu sesión expiró. Inicia sesión de nuevo.";
+      }
+
       if (error.type == DioExceptionType.connectionTimeout ||
           error.type == DioExceptionType.sendTimeout ||
           error.type == DioExceptionType.receiveTimeout) {

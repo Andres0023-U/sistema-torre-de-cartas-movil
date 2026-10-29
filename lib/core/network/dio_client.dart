@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import '../config/app_config.dart';
+import '../di/injection_container.dart';
+import '../storage/session_storage.dart';
 import 'token_holder.dart';
 
 class DioClient {
@@ -28,6 +30,18 @@ class DioClient {
                 }
               }
               return handler.next(options);
+            },
+            onError: (error, handler) async {
+              final isLogin = error.requestOptions.path.contains('/auth/login');
+              final statusCode = error.response?.statusCode;
+
+              if (!isLogin && statusCode == 401) {
+                tokenHolder.clear();
+                try {
+                  await sl<SessionStorage>().clear();
+                } catch (_) {}
+              }
+              return handler.next(error);
             },
           ),
         );

@@ -2,9 +2,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/round_entity.dart';
 import '../../domain/entities/tournament_entity.dart';
 import '../../domain/entities/tournament_player_entity.dart';
+import '../../domain/usecases/get_available_players_usecase.dart';
 import '../../domain/usecases/get_tournament_players_usecase.dart';
 import '../../domain/usecases/get_tournament_rounds_usecase.dart';
 import '../../domain/usecases/get_tournaments_usecase.dart';
+import '../../domain/usecases/register_player_usecase.dart';
 import '../../domain/usecases/start_tournament_usecase.dart';
 import 'tournament_detail_event.dart';
 import 'tournament_detail_state.dart';
@@ -15,13 +17,88 @@ class TournamentDetailBloc
   final GetTournamentPlayersUseCase getTournamentPlayersUseCase;
   final GetTournamentRoundsUseCase getTournamentRoundsUseCase;
   final StartTournamentUseCase startTournamentUseCase;
+  final GetAvailablePlayersUseCase getAvailablePlayersUseCase;
+  final RegisterPlayerUseCase registerPlayerUseCase;
 
   TournamentDetailBloc({
     required this.getTournamentsUseCase,
     required this.getTournamentPlayersUseCase,
     required this.getTournamentRoundsUseCase,
     required this.startTournamentUseCase,
+    required this.getAvailablePlayersUseCase,
+    required this.registerPlayerUseCase,
   }) : super(const TournamentDetailInitial()) {
+    on<AvailablePlayersRequested>((event, emit) async {
+      final current = state;
+      if (current is! TournamentDetailLoaded ||
+          current.isLoadingAvailablePlayers) {
+        return;
+      }
+      emit(current.copyWith(
+        isLoadingAvailablePlayers: true,
+        availablePlayersError: null,
+      ));
+      try {
+        final available = await getAvailablePlayersUseCase();
+        final latest = state;
+        if (latest is TournamentDetailLoaded) {
+          emit(latest.copyWith(
+            availablePlayers: available,
+            isLoadingAvailablePlayers: false,
+            availablePlayersError: null,
+          ));
+        }
+      } catch (e) {
+        final latest = state;
+        if (latest is TournamentDetailLoaded) {
+          emit(latest.copyWith(
+            isLoadingAvailablePlayers: false,
+            availablePlayersError: _messageOf(e),
+          ));
+        }
+      }
+    });
+
+    on<PlayerRegistrationRequested>((event, emit) async {
+      final current = state;
+      if (current is! TournamentDetailLoaded ||
+          current.registeringPlayerId != null) {
+        return;
+      }
+      final tournamentId = current.tournament.tournamentId;
+      emit(current.copyWith(registeringPlayerId: event.player.playerId));
+
+      try {
+        await registerPlayerUseCase(tournamentId, event.player.playerId);
+      } catch (e) {
+        final latest = state;
+        if (latest is TournamentDetailLoaded) {
+          emit(latest.copyWith(
+            registeringPlayerId: null,
+            errorMessage: _messageOf(e),
+          ));
+        }
+        return;
+      }
+
+      try {
+        final fresh = await _load(tournamentId);
+        emit(fresh.copyWith(
+          successMessage: '${event.player.name} inscrito',
+        ));
+      } catch (e) {
+        // La inscripción se hizo, pero no se pudo recargar: se conservan
+        // los datos mostrados y se avisa del error.
+        final latest = state;
+        if (latest is TournamentDetailLoaded) {
+          emit(latest.copyWith(
+            registeringPlayerId: null,
+            errorMessage: _messageOf(e),
+          ));
+        }
+      }
+    });
+
     on<TournamentDetailRequested>((event, emit) async {
       emit(const TournamentDetailLoading());
       try {

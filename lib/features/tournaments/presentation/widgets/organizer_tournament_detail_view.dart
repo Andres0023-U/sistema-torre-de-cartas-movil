@@ -9,6 +9,7 @@ import '../../domain/entities/tournament_entity.dart';
 import '../../domain/entities/tournament_player_entity.dart';
 import '../bloc/tournament_detail_bloc.dart';
 import '../bloc/tournament_detail_event.dart';
+import 'register_player_sheet.dart';
 import 'tournament_detail_content.dart';
 
 class OrganizerTournamentDetailView extends StatelessWidget {
@@ -59,11 +60,13 @@ class OrganizerTournamentDetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthBloc>().state;
-    final canStart = !readOnly &&
+    final isOwnerOrganizer = !readOnly &&
         auth.role == UserRole.organizer &&
         tournament.status == 'pending' &&
         auth.userId != null &&
         auth.userId == tournament.organizerId;
+    final canStart = isOwnerOrganizer;
+    final canRegister = isOwnerOrganizer && players.length < tournament.numPlayers;
 
     return Column(
       children: [
@@ -109,6 +112,18 @@ class OrganizerTournamentDetailView extends StatelessWidget {
             players: players,
             rounds: rounds,
             onRefresh: onRefresh,
+            playersHeader: canRegister
+                ? SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: isStarting
+                          ? null
+                          : () => RegisterPlayerSheet.show(context),
+                      icon: const Icon(Icons.person_add_alt_1),
+                      label: const Text('Inscribir jugador'),
+                    ),
+                  )
+                : null,
           ),
         ),
       ],

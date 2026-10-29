@@ -17,10 +17,14 @@ import '../../features/ranking/presentation/bloc/ranking_bloc.dart';
 import '../../features/tournaments/data/datasources/tournament_remote_data_source.dart';
 import '../../features/tournaments/data/repositories/tournament_repository_impl.dart';
 import '../../features/tournaments/domain/repositories/tournament_repository.dart';
+import '../../features/tournaments/domain/usecases/create_tournament_usecase.dart';
+import '../../features/tournaments/domain/usecases/get_available_players_usecase.dart';
+import '../../features/tournaments/domain/usecases/register_player_usecase.dart';
 import '../../features/tournaments/domain/usecases/get_tournament_players_usecase.dart';
 import '../../features/tournaments/domain/usecases/get_tournament_rounds_usecase.dart';
 import '../../features/tournaments/domain/usecases/get_tournaments_usecase.dart';
 import '../../features/tournaments/domain/usecases/start_tournament_usecase.dart';
+import '../../features/tournaments/presentation/bloc/create_tournament_bloc.dart';
 import '../../features/tournaments/presentation/bloc/tournament_detail_bloc.dart';
 import '../../features/tournaments/presentation/bloc/tournaments_bloc.dart';
 import '../network/dio_client.dart';
@@ -95,6 +99,15 @@ void initDependencies() {
   sl.registerLazySingleton<StartTournamentUseCase>(
     () => StartTournamentUseCase(repository: sl<TournamentRepository>()),
   );
+  sl.registerLazySingleton<CreateTournamentUseCase>(
+    () => CreateTournamentUseCase(repository: sl<TournamentRepository>()),
+  );
+  sl.registerLazySingleton<GetAvailablePlayersUseCase>(
+    () => GetAvailablePlayersUseCase(repository: sl<TournamentRepository>()),
+  );
+  sl.registerLazySingleton<RegisterPlayerUseCase>(
+    () => RegisterPlayerUseCase(repository: sl<TournamentRepository>()),
+  );
 
   sl.registerLazySingleton<AuthBloc>(
     () => AuthBloc(
@@ -113,6 +126,13 @@ void initDependencies() {
       getTournamentPlayersUseCase: sl<GetTournamentPlayersUseCase>(),
       getTournamentRoundsUseCase: sl<GetTournamentRoundsUseCase>(),
       startTournamentUseCase: sl<StartTournamentUseCase>(),
+      getAvailablePlayersUseCase: sl<GetAvailablePlayersUseCase>(),
+      registerPlayerUseCase: sl<RegisterPlayerUseCase>(),
+    ),
+  );
+  sl.registerFactory<CreateTournamentBloc>(
+    () => CreateTournamentBloc(
+      createTournamentUseCase: sl<CreateTournamentUseCase>(),
     ),
   );
   sl.registerFactory<DecksBloc>(() => DecksBloc());

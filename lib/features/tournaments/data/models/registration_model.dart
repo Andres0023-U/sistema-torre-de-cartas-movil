@@ -9,17 +9,17 @@ class RegistrationModel extends RegistrationEntity {
 
   factory RegistrationModel.fromJson(Map<String, dynamic> json) {
     return RegistrationModel(
-      tournamentRegistrationId: json['tournamentRegistrationId'] as int? ?? 0,
-      tournamentId: json['tournamentId'] as int? ?? 0,
-      playerId: json['playerId'] as int? ?? 0,
+      tournamentRegistrationId: json['tournament_registration_id'] as int? ?? 0,
+      tournamentId: json['tournament_id'] as int? ?? 0,
+      playerId: json['player_id'] as int? ?? 0,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'tournamentRegistrationId': tournamentRegistrationId,
-      'tournamentId': tournamentId,
-      'playerId': playerId,
+      'tournament_registration_id': tournamentRegistrationId,
+      'tournament_id': tournamentId,
+      'player_id': playerId,
     };
   }
 }

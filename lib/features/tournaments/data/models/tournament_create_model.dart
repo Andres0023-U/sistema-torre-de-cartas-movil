@@ -8,12 +8,21 @@ class TournamentCreateModel extends TournamentCreateEntity {
     required super.numPlayers,
   });
 
+  factory TournamentCreateModel.fromEntity(TournamentCreateEntity entity) {
+    return TournamentCreateModel(
+      name: entity.name,
+      date: entity.date,
+      format: entity.format,
+      numPlayers: entity.numPlayers,
+    );
+  }
+
   factory TournamentCreateModel.fromJson(Map<String, dynamic> json) {
     return TournamentCreateModel(
       name: json['name'] as String? ?? '',
       date: json['date'] as String? ?? '',
       format: json['format'] as String? ?? '',
-      numPlayers: json['numPlayers'] as int? ?? 0,
+      numPlayers: json['num_players'] as int? ?? 0,
     );
   }
 
@@ -22,7 +31,7 @@ class TournamentCreateModel extends TournamentCreateEntity {
       'name': name,
       'date': date,
       'format': format,
-      'numPlayers': numPlayers,
+      'num_players': numPlayers,
     };
   }
 }
