@@ -7,4 +7,15 @@ abstract class DecksEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class LoadDecksEvent extends DecksEvent {}
+class DecksRequested extends DecksEvent {
+  const DecksRequested();
+}
+
+class DeckCreateRequested extends DecksEvent {
+  final String name;
+
+  const DeckCreateRequested(this.name);
+
+  @override
+  List<Object?> get props => [name];
+}

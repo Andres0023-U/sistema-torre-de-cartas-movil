@@ -8,6 +8,18 @@ import '../../features/auth/domain/usecases/login_usecase.dart';
 import '../../features/auth/domain/usecases/logout_usecase.dart';
 import '../../features/auth/domain/usecases/restore_session_usecase.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../features/decks/data/datasources/deck_remote_data_source.dart';
+import '../../features/decks/data/repositories/deck_repository_impl.dart';
+import '../../features/decks/domain/repositories/deck_repository.dart';
+import '../../features/decks/domain/usecases/add_card_to_deck_usecase.dart';
+import '../../features/decks/domain/usecases/create_deck_usecase.dart';
+import '../../features/decks/domain/usecases/get_cards_catalog_usecase.dart';
+import '../../features/decks/domain/usecases/get_deck_by_id_usecase.dart';
+import '../../features/decks/domain/usecases/get_deck_cards_usecase.dart';
+import '../../features/decks/domain/usecases/get_decks_usecase.dart';
+import '../../features/decks/domain/usecases/remove_card_from_deck_usecase.dart';
+import '../../features/decks/domain/usecases/update_card_quantity_usecase.dart';
+import '../../features/decks/presentation/bloc/deck_detail_bloc.dart';
 import '../../features/decks/presentation/bloc/decks_bloc.dart';
 import '../../features/ranking/data/datasources/ranking_remote_data_source.dart';
 import '../../features/ranking/data/repositories/ranking_repository_impl.dart';
@@ -109,6 +121,38 @@ void initDependencies() {
     () => RegisterPlayerUseCase(repository: sl<TournamentRepository>()),
   );
 
+  // Decks data & domain
+  sl.registerLazySingleton<DeckRemoteDataSource>(
+    () => DeckRemoteDataSourceImpl(dioClient: sl<DioClient>()),
+  );
+  sl.registerLazySingleton<DeckRepository>(
+    () => DeckRepositoryImpl(remoteDataSource: sl<DeckRemoteDataSource>()),
+  );
+  sl.registerLazySingleton<GetDecksUseCase>(
+    () => GetDecksUseCase(repository: sl<DeckRepository>()),
+  );
+  sl.registerLazySingleton<CreateDeckUseCase>(
+    () => CreateDeckUseCase(repository: sl<DeckRepository>()),
+  );
+  sl.registerLazySingleton<GetDeckByIdUseCase>(
+    () => GetDeckByIdUseCase(repository: sl<DeckRepository>()),
+  );
+  sl.registerLazySingleton<GetDeckCardsUseCase>(
+    () => GetDeckCardsUseCase(repository: sl<DeckRepository>()),
+  );
+  sl.registerLazySingleton<GetCardsCatalogUseCase>(
+    () => GetCardsCatalogUseCase(repository: sl<DeckRepository>()),
+  );
+  sl.registerLazySingleton<AddCardToDeckUseCase>(
+    () => AddCardToDeckUseCase(repository: sl<DeckRepository>()),
+  );
+  sl.registerLazySingleton<UpdateCardQuantityUseCase>(
+    () => UpdateCardQuantityUseCase(repository: sl<DeckRepository>()),
+  );
+  sl.registerLazySingleton<RemoveCardFromDeckUseCase>(
+    () => RemoveCardFromDeckUseCase(repository: sl<DeckRepository>()),
+  );
+
   sl.registerLazySingleton<AuthBloc>(
     () => AuthBloc(
       loginUseCase: sl<LoginUseCase>(),
@@ -135,7 +179,22 @@ void initDependencies() {
       createTournamentUseCase: sl<CreateTournamentUseCase>(),
     ),
   );
-  sl.registerFactory<DecksBloc>(() => DecksBloc());
+  sl.registerFactory<DecksBloc>(
+    () => DecksBloc(
+      getDecksUseCase: sl<GetDecksUseCase>(),
+      createDeckUseCase: sl<CreateDeckUseCase>(),
+    ),
+  );
+  sl.registerFactory<DeckDetailBloc>(
+    () => DeckDetailBloc(
+      getDeckByIdUseCase: sl<GetDeckByIdUseCase>(),
+      getDeckCardsUseCase: sl<GetDeckCardsUseCase>(),
+      getCardsCatalogUseCase: sl<GetCardsCatalogUseCase>(),
+      addCardToDeckUseCase: sl<AddCardToDeckUseCase>(),
+      updateCardQuantityUseCase: sl<UpdateCardQuantityUseCase>(),
+      removeCardFromDeckUseCase: sl<RemoveCardFromDeckUseCase>(),
+    ),
+  );
   sl.registerFactory<RankingBloc>(
     () => RankingBloc(getRankingUseCase: sl<GetRankingUseCase>()),
   );

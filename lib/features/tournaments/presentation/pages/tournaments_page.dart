@@ -274,9 +274,8 @@ class _TournamentsPageState extends State<TournamentsPage> {
                         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                         itemCount: filtered.length,
                         itemBuilder: (context, index) {
-                          return _buildTournamentCard(
-                            context,
-                            filtered[index],
+                          return _TournamentCardItem(
+                            tournament: filtered[index],
                           );
                         },
                       ),
@@ -292,14 +291,42 @@ class _TournamentsPageState extends State<TournamentsPage> {
       ),
     );
   }
+}
 
-  Widget _buildTournamentCard(
-    BuildContext context,
-    TournamentEntity tournament,
-  ) {
+class _TournamentCardItem extends StatelessWidget {
+  final TournamentEntity tournament;
+
+  const _TournamentCardItem({required this.tournament});
+
+  static final _titleStyle = GoogleFonts.sourceSans3(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    color: AppColors.ink,
+  );
+
+  static final _metaStyle = GoogleFonts.sourceSans3(
+    fontSize: 13,
+    color: AppColors.muted,
+  );
+
+  static final _chipStyleLight = GoogleFonts.sourceSans3(
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
+    color: Colors.white,
+  );
+
+  static final _chipStyleDark = GoogleFonts.sourceSans3(
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
+    color: AppColors.navy,
+  );
+
+  @override
+  Widget build(BuildContext context) {
     final label = tournamentStatusLabel(tournament.status);
     final chipBg = tournamentStatusColor(tournament.status);
-    final chipText = tournamentStatusTextColor(tournament.status);
+    final isDarkText = tournament.status == 'in_progress';
+    final chipTextStyle = isDarkText ? _chipStyleDark : _chipStyleLight;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -325,26 +352,23 @@ class _TournamentsPageState extends State<TournamentsPage> {
                   Expanded(
                     child: Text(
                       tournament.name,
-                      style: GoogleFonts.sourceSans3(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
-                      ),
+                      style: _titleStyle,
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Chip(
-                    label: Text(
-                      label,
-                      style: GoogleFonts.sourceSans3(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: chipText,
-                      ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
                     ),
-                    backgroundColor: chipBg,
-                    visualDensity: VisualDensity.compact,
-                    padding: EdgeInsets.zero,
+                    decoration: BoxDecoration(
+                      color: chipBg,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      label,
+                      style: chipTextStyle,
+                    ),
                   ),
                 ],
               ),
@@ -363,10 +387,7 @@ class _TournamentsPageState extends State<TournamentsPage> {
                       const SizedBox(width: 4),
                       Text(
                         formatTournamentDate(tournament.date),
-                        style: GoogleFonts.sourceSans3(
-                          fontSize: 13,
-                          color: AppColors.muted,
-                        ),
+                        style: _metaStyle,
                       ),
                     ],
                   ),
@@ -377,10 +398,7 @@ class _TournamentsPageState extends State<TournamentsPage> {
                       const SizedBox(width: 4),
                       Text(
                         tournament.format,
-                        style: GoogleFonts.sourceSans3(
-                          fontSize: 13,
-                          color: AppColors.muted,
-                        ),
+                        style: _metaStyle,
                       ),
                     ],
                   ),
@@ -391,10 +409,7 @@ class _TournamentsPageState extends State<TournamentsPage> {
                       const SizedBox(width: 4),
                       Text(
                         '${tournament.numPlayers} jugadores',
-                        style: GoogleFonts.sourceSans3(
-                          fontSize: 13,
-                          color: AppColors.muted,
-                        ),
+                        style: _metaStyle,
                       ),
                     ],
                   ),

@@ -5,6 +5,10 @@ class DeckCreateModel extends DeckCreateEntity {
     required super.name,
   });
 
+  factory DeckCreateModel.fromEntity(DeckCreateEntity entity) {
+    return DeckCreateModel(name: entity.name);
+  }
+
   factory DeckCreateModel.fromJson(Map<String, dynamic> json) {
     return DeckCreateModel(
       name: json['name'] as String? ?? '',

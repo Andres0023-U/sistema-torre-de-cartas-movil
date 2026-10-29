@@ -11,6 +11,7 @@ import '../../features/auth/presentation/pages/change_password_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/pending_account_page.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
+import '../../features/decks/presentation/pages/deck_detail_page.dart';
 import '../../features/decks/presentation/pages/my_decks_page.dart';
 import '../../features/decks/presentation/pages/round_deck_page.dart';
 import '../../features/ranking/presentation/pages/ranking_page.dart';
@@ -76,7 +77,7 @@ bool _isRouteAllowedForRole(String location, UserRole? role) {
       [UserRole.player, UserRole.organizer, UserRole.admin],
     ),
     MapEntry(
-      RegExp(r'^/decks(/.*)?$'),
+      RegExp(r'^/decks?(/.*)?$'),
       [UserRole.player],
     ),
     MapEntry(
@@ -188,6 +189,20 @@ GoRouter createRouter(Listenable refreshListenable) {
           GoRoute(
             path: '/decks',
             builder: (context, state) => const MyDecksPage(),
+            routes: [
+              GoRoute(
+                path: ':id',
+                builder: (context, state) => DeckDetailPage(
+                  deckId: state.pathParameters['id'] ?? '',
+                ),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/deck/:id',
+            builder: (context, state) => DeckDetailPage(
+              deckId: state.pathParameters['id'] ?? '',
+            ),
           ),
           GoRoute(
             path: '/ranking',

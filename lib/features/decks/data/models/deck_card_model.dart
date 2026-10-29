@@ -9,16 +9,16 @@ class DeckCardModel extends DeckCardEntity {
 
   factory DeckCardModel.fromJson(Map<String, dynamic> json) {
     return DeckCardModel(
-      deckId: json['deckId'] as int? ?? 0,
-      cardId: json['cardId'] as int? ?? 0,
+      deckId: json['deck_id'] as int? ?? json['deckId'] as int? ?? 0,
+      cardId: json['card_id'] as int? ?? json['cardId'] as int? ?? 0,
       quantity: json['quantity'] as int? ?? 0,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'deckId': deckId,
-      'cardId': cardId,
+      'deck_id': deckId,
+      'card_id': cardId,
       'quantity': quantity,
     };
   }

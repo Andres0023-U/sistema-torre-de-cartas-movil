@@ -14,12 +14,12 @@ class CardModel extends CardEntity {
 
   factory CardModel.fromJson(Map<String, dynamic> json) {
     return CardModel(
-      id: json['id'] as int? ?? json['cardId'] as int? ?? 0,
-      name: json['name'] as String? ?? json['cardName'] as String? ?? '',
+      id: json['card_id'] as int? ?? json['id'] as int? ?? json['cardId'] as int? ?? 0,
+      name: json['card_name'] as String? ?? json['name'] as String? ?? json['cardName'] as String? ?? '',
       type: json['type'] as String? ?? '',
       value: json['value'] as int? ?? 0,
       effect: json['effect'] as String?,
-      copiesAvailable: json['copiesAvailable'] as int? ?? json['maxQuantity'] as int? ?? 0,
+      copiesAvailable: json['max_quantity'] as int? ?? json['copiesAvailable'] as int? ?? json['maxQuantity'] as int? ?? 0,
       description: json['description'] as String? ?? '',
       rarity: json['rarity'] as String? ?? '',
     );
@@ -27,12 +27,12 @@ class CardModel extends CardEntity {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'name': name,
+      'card_id': id,
+      'card_name': name,
       'type': type,
       'value': value,
       if (effect != null) 'effect': effect,
-      'copiesAvailable': copiesAvailable,
+      'max_quantity': copiesAvailable,
       'description': description,
       'rarity': rarity,
     };
