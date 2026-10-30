@@ -47,6 +47,12 @@ class DeckDetailBloc extends Bloc<DeckDetailEvent, DeckDetailState> {
       final current = state;
       if (current is! DeckDetailLoaded || current.isUpdating) return;
 
+      if (current.totalCards + event.quantity >
+          DeckDetailLoaded.maxDeckCards) {
+        emit(current.copyWith(errorMessage: _limitMessage));
+        return;
+      }
+
       emit(current.copyWith(isUpdating: true));
       final deckId = current.deck.deckId;
 
@@ -69,6 +75,13 @@ class DeckDetailBloc extends Bloc<DeckDetailEvent, DeckDetailState> {
     on<DeckUpdateCardQuantityRequested>((event, emit) async {
       final current = state;
       if (current is! DeckDetailLoaded || current.isUpdating) return;
+
+      final delta = event.quantity - current.getQuantityFor(event.cardId);
+      if (delta > 0 &&
+          current.totalCards + delta > DeckDetailLoaded.maxDeckCards) {
+        emit(current.copyWith(errorMessage: _limitMessage));
+        return;
+      }
 
       emit(current.copyWith(isUpdating: true));
       final deckId = current.deck.deckId;
@@ -115,6 +128,9 @@ class DeckDetailBloc extends Bloc<DeckDetailEvent, DeckDetailState> {
       }
     });
   }
+
+  static const String _limitMessage =
+      'El mazo no puede tener más de ${DeckDetailLoaded.maxDeckCards} cartas';
 
   String _messageOf(Object e) => e.toString().replaceAll('Exception: ', '');
 }

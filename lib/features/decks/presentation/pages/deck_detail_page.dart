@@ -4,11 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../domain/entities/card_entity.dart';
-import '../../domain/entities/deck_card_entity.dart';
 import '../bloc/deck_detail_bloc.dart';
 import '../bloc/deck_detail_event.dart';
 import '../bloc/deck_detail_state.dart';
+import '../widgets/card_carousel_item.dart';
 
 class DeckDetailPage extends StatelessWidget {
   final String deckId;
@@ -37,13 +36,27 @@ class _DeckDetailView extends StatefulWidget {
 }
 
 class _DeckDetailViewState extends State<_DeckDetailView> {
-  int? get _parsedId => int.tryParse(widget.deckId);
+  final PageController _deckController = PageController(viewportFraction: 0.8);
+  final PageController _catalogController =
+      PageController(viewportFraction: 0.8);
+
+  int _deckPage = 0;
+  int _catalogPage = 0;
   String _catalogQuery = '';
+
+  int? get _parsedId => int.tryParse(widget.deckId);
 
   @override
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _deckController.dispose();
+    _catalogController.dispose();
+    super.dispose();
   }
 
   void _load() {
@@ -144,7 +157,7 @@ class _DeckDetailViewState extends State<_DeckDetailView> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                       child: _buildHeader(state),
                     ),
                     TabBar(
@@ -156,12 +169,8 @@ class _DeckDetailViewState extends State<_DeckDetailView> {
                         fontWeight: FontWeight.bold,
                       ),
                       tabs: [
-                        Tab(
-                          text: 'En el mazo (${state.deckCards.length})',
-                        ),
-                        Tab(
-                          text: 'Catálogo (${state.catalog.length})',
-                        ),
+                        Tab(text: 'En el mazo (${state.deckCards.length})'),
+                        Tab(text: 'Catálogo (${state.catalog.length})'),
                       ],
                     ),
                     Expanded(
@@ -186,10 +195,11 @@ class _DeckDetailViewState extends State<_DeckDetailView> {
 
   Widget _buildHeader(DeckDetailLoaded state) {
     final total = state.totalCards;
+    const max = DeckDetailLoaded.maxDeckCards;
     final isValid = state.isValidForTournament;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.parchment,
         borderRadius: BorderRadius.circular(14),
@@ -204,21 +214,22 @@ class _DeckDetailViewState extends State<_DeckDetailView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              const Icon(Icons.layers, size: 16, color: AppColors.muted),
+              const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  state.deck.name,
+                  'Cartas: $total / $max',
                   style: GoogleFonts.sourceSans3(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.ink,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: isValid ? AppColors.navy : AppColors.ink,
                   ),
                 ),
               ),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                 decoration: BoxDecoration(
                   color: isValid ? AppColors.gold : Colors.grey.shade400,
                   borderRadius: BorderRadius.circular(10),
@@ -234,26 +245,11 @@ class _DeckDetailViewState extends State<_DeckDetailView> {
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              const Icon(Icons.layers, size: 16, color: AppColors.muted),
-              const SizedBox(width: 6),
-              Text(
-                'Total: $total de 20 cartas mínimas',
-                style: GoogleFonts.sourceSans3(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: isValid ? AppColors.navy : AppColors.muted,
-                ),
-              ),
-            ],
-          ),
           const SizedBox(height: 8),
           ClipRRect(
             borderRadius: BorderRadius.circular(6),
             child: LinearProgressIndicator(
-              value: (total / 20.0).clamp(0.0, 1.0),
+              value: (total / max).clamp(0.0, 1.0),
               backgroundColor: AppColors.line.withValues(alpha: 0.5),
               valueColor: AlwaysStoppedAnimation<Color>(
                 isValid ? AppColors.gold : Colors.amber.shade700,
@@ -266,186 +262,83 @@ class _DeckDetailViewState extends State<_DeckDetailView> {
     );
   }
 
-  Widget _buildDeckCardsTab(DeckDetailLoaded state) {
-    if (state.deckCards.isEmpty) {
-      return RefreshIndicator(
-        color: AppColors.gold,
-        onRefresh: () async => _load(),
-        child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(24),
-          children: [
-            const SizedBox(height: 40),
-            const Icon(Icons.style_outlined, size: 56, color: AppColors.muted),
-            const SizedBox(height: 12),
-            Text(
-              'Este mazo no tiene cartas aún',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.sourceSans3(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.ink,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Pasa a la pestaña "Catálogo" para agregar cartas.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.sourceSans3(
-                fontSize: 13,
-                color: AppColors.muted,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return RefreshIndicator(
-      color: AppColors.gold,
-      onRefresh: () async => _load(),
-      child: ListView.builder(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-        itemCount: state.deckCards.length,
-        itemBuilder: (context, index) {
-          final dc = state.deckCards[index];
-          return _buildDeckCardRow(context, state, dc);
-        },
+  Widget _buildPageIndicator(int current, int total) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: Text(
+        total == 0 ? '' : '${current + 1} / $total · desliza para ver más',
+        style: GoogleFonts.sourceSans3(fontSize: 12, color: AppColors.muted),
       ),
     );
   }
 
-  Widget _buildDeckCardRow(
-    BuildContext context,
-    DeckDetailLoaded state,
-    DeckCardEntity dc,
-  ) {
-    final card = state.catalogMap[dc.cardId];
-    final cardName = card?.name ?? 'Carta #${dc.cardId}';
-    final cardType = card?.type ?? '';
-    final cardValue = card?.value ?? 0;
-    final maxQty = card?.copiesAvailable ?? 3;
-    final canIncrement = dc.quantity < maxQty;
+  Widget _buildDeckCardsTab(DeckDetailLoaded state) {
+    final items = state.deckCards;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 10),
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: AppColors.line.withValues(alpha: 0.6),
+    if (items.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.style_outlined,
+                  size: 56, color: AppColors.muted),
+              const SizedBox(height: 12),
+              Text(
+                'Este mazo no tiene cartas aún',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.sourceSans3(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.ink,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Pasa a la pestaña "Catálogo" para agregar cartas.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.sourceSans3(
+                  fontSize: 13,
+                  color: AppColors.muted,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppColors.navy,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Center(
-                child: Text(
-                  '$cardValue',
-                  style: GoogleFonts.sourceSans3(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.gold,
-                  ),
+      );
+    }
+
+    final shownPage = _deckPage.clamp(0, items.length - 1);
+
+    return Column(
+      children: [
+        _buildPageIndicator(shownPage, items.length),
+        Expanded(
+          child: PageView.builder(
+            controller: _deckController,
+            itemCount: items.length,
+            onPageChanged: (page) => setState(() => _deckPage = page),
+            itemBuilder: (context, index) {
+              final dc = items[index];
+              final card = state.catalogMap[dc.cardId];
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                child: CardCarouselItem(
+                  cardId: dc.cardId,
+                  card: card,
+                  quantity: dc.quantity,
+                  maxQuantity: card?.copiesAvailable ?? 3,
+                  deckHasRoom: !state.isFull,
+                  isUpdating: state.isUpdating,
+                  onIncrement: () => _changeQuantity(dc.cardId, dc.quantity + 1),
+                  onDecrement: () => _changeQuantity(dc.cardId, dc.quantity - 1),
                 ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    cardName,
-                    style: GoogleFonts.sourceSans3(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.ink,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Tipo: $cardType · Máx: $maxQty',
-                    style: GoogleFonts.sourceSans3(
-                      fontSize: 12,
-                      color: AppColors.muted,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.remove_circle_outline, size: 22),
-                  color: AppColors.error,
-                  tooltip: dc.quantity == 1 ? 'Eliminar' : 'Reducir',
-                  onPressed: state.isUpdating
-                      ? null
-                      : () {
-                          context.read<DeckDetailBloc>().add(
-                                DeckUpdateCardQuantityRequested(
-                                  cardId: dc.cardId,
-                                  quantity: dc.quantity - 1,
-                                ),
-                              );
-                        },
-                ),
-                Text(
-                  '${dc.quantity}',
-                  style: GoogleFonts.sourceSans3(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.ink,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.add_circle_outline,
-                    size: 22,
-                    color: canIncrement
-                        ? AppColors.navy
-                        : Colors.grey.shade300,
-                  ),
-                  tooltip: canIncrement ? 'Aumentar' : 'Máximo alcanzado',
-                  onPressed: canIncrement && !state.isUpdating
-                      ? () {
-                          context.read<DeckDetailBloc>().add(
-                                DeckUpdateCardQuantityRequested(
-                                  cardId: dc.cardId,
-                                  quantity: dc.quantity + 1,
-                                ),
-                              );
-                        }
-                      : null,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline,
-                      size: 20, color: AppColors.muted),
-                  tooltip: 'Quitar del mazo',
-                  onPressed: state.isUpdating
-                      ? null
-                      : () {
-                          context.read<DeckDetailBloc>().add(
-                                DeckRemoveCardRequested(dc.cardId),
-                              );
-                        },
-                ),
-              ],
-            ),
-          ],
+              );
+            },
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -458,215 +351,99 @@ class _DeckDetailViewState extends State<_DeckDetailView> {
           card.rarity.toLowerCase().contains(q);
     }).toList();
 
-    return RefreshIndicator(
-      color: AppColors.gold,
-      onRefresh: () async => _load(),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            child: TextField(
-              decoration: const InputDecoration(
-                hintText: 'Buscar por nombre, tipo o rareza',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                ),
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 0,
-                  horizontal: 16,
-                ),
+    final shownPage =
+        filtered.isEmpty ? 0 : _catalogPage.clamp(0, filtered.length - 1);
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+          child: TextField(
+            decoration: const InputDecoration(
+              hintText: 'Buscar por nombre, tipo o rareza',
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
               ),
-              onChanged: (val) {
-                setState(() {
-                  _catalogQuery = val.trim();
-                });
-              },
+              contentPadding: EdgeInsets.symmetric(
+                vertical: 0,
+                horizontal: 16,
+              ),
             ),
+            onChanged: (val) {
+              setState(() {
+                _catalogQuery = val.trim();
+                _catalogPage = 0;
+              });
+              if (_catalogController.hasClients) {
+                _catalogController.jumpToPage(0);
+              }
+            },
           ),
-          Expanded(
-            child: filtered.isEmpty
-                ? Center(
-                    child: Text(
-                      'No se encontraron cartas en el catálogo',
-                      style: GoogleFonts.sourceSans3(
-                        fontSize: 15,
-                        color: AppColors.muted,
-                      ),
+        ),
+        _buildPageIndicator(shownPage, filtered.length),
+        Expanded(
+          child: filtered.isEmpty
+              ? Center(
+                  child: Text(
+                    'No se encontraron cartas en el catálogo',
+                    style: GoogleFonts.sourceSans3(
+                      fontSize: 15,
+                      color: AppColors.muted,
                     ),
-                  )
-                : ListView.builder(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-                    itemCount: filtered.length,
-                    itemBuilder: (context, index) {
-                      final card = filtered[index];
-                      return _buildCatalogCardItem(context, state, card);
-                    },
                   ),
-          ),
-        ],
-      ),
+                )
+              : PageView.builder(
+                  controller: _catalogController,
+                  itemCount: filtered.length,
+                  onPageChanged: (page) => setState(() => _catalogPage = page),
+                  itemBuilder: (context, index) {
+                    final card = filtered[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 8,
+                      ),
+                      child: CardCarouselItem(
+                        cardId: card.id,
+                        card: card,
+                        quantity: state.getQuantityFor(card.id),
+                        maxQuantity: card.copiesAvailable,
+                        deckHasRoom: !state.isFull,
+                        isUpdating: state.isUpdating,
+                        onIncrement: () => _addOne(state, card.id),
+                        onDecrement: () => _changeQuantity(
+                          card.id,
+                          state.getQuantityFor(card.id) - 1,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ],
     );
   }
 
-  Widget _buildCatalogCardItem(
-    BuildContext context,
-    DeckDetailLoaded state,
-    CardEntity card,
-  ) {
-    final currentQty = state.getQuantityFor(card.id);
-    final maxQty = card.copiesAvailable;
-    final canAddMore = currentQty < maxQty;
+  void _addOne(DeckDetailLoaded state, int cardId) {
+    final bloc = context.read<DeckDetailBloc>();
+    final current = state.getQuantityFor(cardId);
+    if (current == 0) {
+      bloc.add(DeckAddCardRequested(cardId: cardId, quantity: 1));
+    } else {
+      bloc.add(DeckUpdateCardQuantityRequested(
+        cardId: cardId,
+        quantity: current + 1,
+      ));
+    }
+  }
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 10),
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: currentQty > 0
-              ? AppColors.gold
-              : AppColors.line.withValues(alpha: 0.6),
-          width: currentQty > 0 ? 1.4 : 1.0,
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: AppColors.navy,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Center(
-                child: Text(
-                  '${card.value}',
-                  style: GoogleFonts.sourceSans3(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.gold,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          card.name,
-                          style: GoogleFonts.sourceSans3(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.goldSoft.withValues(alpha: 0.6),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          card.rarity.toUpperCase(),
-                          style: GoogleFonts.sourceSans3(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.goldDark,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Tipo: ${card.type} · En mazo: $currentQty/$maxQty',
-                    style: GoogleFonts.sourceSans3(
-                      fontSize: 12,
-                      color: currentQty > 0 ? AppColors.navy : AppColors.muted,
-                      fontWeight:
-                          currentQty > 0 ? FontWeight.w600 : FontWeight.normal,
-                    ),
-                  ),
-                  if (card.effect != null && card.effect!.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      card.effect!,
-                      style: GoogleFonts.sourceSans3(
-                        fontSize: 12,
-                        fontStyle: FontStyle.italic,
-                        color: AppColors.ink,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (currentQty > 0)
-                  IconButton(
-                    icon: const Icon(Icons.remove_circle_outline, size: 22),
-                    color: AppColors.error,
-                    tooltip: 'Reducir',
-                    onPressed: state.isUpdating
-                        ? null
-                        : () {
-                            context.read<DeckDetailBloc>().add(
-                                  DeckUpdateCardQuantityRequested(
-                                    cardId: card.id,
-                                    quantity: currentQty - 1,
-                                  ),
-                                );
-                          },
-                  ),
-                IconButton(
-                  icon: Icon(
-                    Icons.add_circle,
-                    color: canAddMore ? AppColors.goldDark : Colors.grey.shade300,
-                    size: 30,
-                  ),
-                  tooltip: canAddMore ? 'Agregar al mazo' : 'Máximo alcanzado',
-                  onPressed: canAddMore && !state.isUpdating
-                      ? () {
-                          if (currentQty == 0) {
-                            context.read<DeckDetailBloc>().add(
-                                  DeckAddCardRequested(
-                                    cardId: card.id,
-                                    quantity: 1,
-                                  ),
-                                );
-                          } else {
-                            context.read<DeckDetailBloc>().add(
-                                  DeckUpdateCardQuantityRequested(
-                                    cardId: card.id,
-                                    quantity: currentQty + 1,
-                                  ),
-                                );
-                          }
-                        }
-                      : null,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+  void _changeQuantity(int cardId, int quantity) {
+    context.read<DeckDetailBloc>().add(
+          DeckUpdateCardQuantityRequested(
+            cardId: cardId,
+            quantity: quantity,
+          ),
+        );
   }
 }

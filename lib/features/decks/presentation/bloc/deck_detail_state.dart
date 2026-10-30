@@ -35,9 +35,18 @@ class DeckDetailLoaded extends DeckDetailState {
     this.errorMessage,
   });
 
+  /// Cantidad máxima de cartas que puede tener un mazo.
+  static const int maxDeckCards = 20;
+
   int get totalCards => deckCards.fold(0, (sum, c) => sum + c.quantity);
 
-  bool get isValidForTournament => totalCards >= 20;
+  /// El mazo es válido para torneo cuando llega a [maxDeckCards].
+  bool get isValidForTournament => totalCards >= maxDeckCards;
+
+  /// Espacios libres antes de llegar al límite.
+  int get remainingSlots => maxDeckCards - totalCards;
+
+  bool get isFull => totalCards >= maxDeckCards;
 
   Map<int, CardEntity> get catalogMap => {for (final c in catalog) c.id: c};
 
