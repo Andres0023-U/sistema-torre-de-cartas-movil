@@ -531,12 +531,16 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
   late final TextEditingController _currentPasswordController;
   late final TextEditingController _newPasswordController;
   late final TextEditingController _confirmPasswordController;
+  late final ScrollController _scrollController;
 
   bool _obscureCurrent = true;
   bool _obscureNew = true;
   bool _obscureConfirm = true;
 
-  String? _localValidationError;
+  String? _currentError;
+  String? _newError;
+  String? _confirmError;
+  String? _generalError;
 
   @override
   void initState() {
@@ -544,6 +548,7 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
     _currentPasswordController = TextEditingController();
     _newPasswordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
+    _scrollController = ScrollController();
   }
 
   @override
@@ -551,13 +556,20 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
     _currentPasswordController.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   void _clearErrors() {
-    if (_localValidationError != null) {
+    if (_currentError != null ||
+        _newError != null ||
+        _confirmError != null ||
+        _generalError != null) {
       setState(() {
-        _localValidationError = null;
+        _currentError = null;
+        _newError = null;
+        _confirmError = null;
+        _generalError = null;
       });
     }
     if (widget.accountBloc.state.passwordErrorMessage != null) {
@@ -565,48 +577,65 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
     }
   }
 
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 320),
+          curve: Curves.easeOutCubic,
+        );
+      }
+    });
+  }
+
   void _submit() {
-    final currentPassword = _currentPasswordController.text.trim();
-    final newPassword = _newPasswordController.text.trim();
-    final confirmPassword = _confirmPasswordController.text.trim();
+    final currentPassword = _currentPasswordController.text;
+    final newPassword = _newPasswordController.text;
+    final confirmPassword = _confirmPasswordController.text;
 
+    String? currentErr;
+    String? newErr;
+    String? confirmErr;
+
+    // 1. Validar contraseña actual
     if (currentPassword.isEmpty) {
-      setState(() {
-        _localValidationError = 'Ingresa tu contraseña actual.';
-      });
-      return;
+      currentErr = 'Ingresa tu contraseña actual.';
     }
 
+    // 2. Validar nueva contraseña (guiado por el registro de usuario)
     if (newPassword.isEmpty) {
+      newErr = 'Este campo es obligatorio.';
+    } else if (newPassword.length < 8) {
+      newErr = 'Debe tener al menos 8 caracteres.';
+    } else if (!RegExp(r'[a-zA-Z]').hasMatch(newPassword)) {
+      newErr = 'Debe incluir al menos una letra.';
+    } else if (!RegExp(r'[0-9]').hasMatch(newPassword)) {
+      newErr = 'Debe incluir al menos un número.';
+    } else if (currentPassword.isNotEmpty && newPassword == currentPassword) {
+      newErr = 'La nueva contraseña debe ser diferente a la actual.';
+    }
+
+    // 3. Validar confirmación de contraseña
+    if (confirmPassword.isEmpty) {
+      confirmErr = 'Confirma la nueva contraseña.';
+    } else if (newPassword.isNotEmpty && confirmPassword != newPassword) {
+      confirmErr = 'Las contraseñas no coinciden.';
+    }
+
+    if (currentErr != null || newErr != null || confirmErr != null) {
+      FocusScope.of(context).unfocus();
       setState(() {
-        _localValidationError = 'Ingresa la nueva contraseña.';
+        _currentError = currentErr;
+        _newError = newErr;
+        _confirmError = confirmErr;
+        _generalError = null;
       });
+      _scrollToBottom();
       return;
     }
 
-    if (newPassword.length < 6) {
-      setState(() {
-        _localValidationError =
-            'La nueva contraseña debe tener al menos 6 caracteres.';
-      });
-      return;
-    }
-
-    if (newPassword == currentPassword) {
-      setState(() {
-        _localValidationError =
-            'La nueva contraseña debe ser diferente a la actual.';
-      });
-      return;
-    }
-
-    if (newPassword != confirmPassword) {
-      setState(() {
-        _localValidationError = 'Las contraseñas no coinciden.';
-      });
-      return;
-    }
-
+    FocusScope.of(context).unfocus();
     widget.accountBloc.add(
       ChangePasswordRequested(
         currentPassword: currentPassword,
@@ -625,12 +654,18 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
       listener: (context, accountState) {
         if (accountState.passwordChangedSuccessfully) {
           Navigator.of(context).pop(true);
+        } else if (accountState.passwordErrorMessage != null) {
+          FocusScope.of(context).unfocus();
+          setState(() {
+            _generalError = accountState.passwordErrorMessage;
+          });
+          _scrollToBottom();
         }
       },
       builder: (context, accountState) {
         final isSaving = accountState.isChangingPassword;
-        final errorText =
-            _localValidationError ?? accountState.passwordErrorMessage;
+        final generalError =
+            _generalError ?? accountState.passwordErrorMessage;
 
         return AlertDialog(
           backgroundColor: AppColors.parchment,
@@ -650,6 +685,7 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
             ),
           ),
           content: SingleChildScrollView(
+            controller: _scrollController,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -669,6 +705,8 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
                   decoration: InputDecoration(
                     labelText: 'Contraseña actual',
                     hintText: 'Ingresa tu clave actual',
+                    errorText: _currentError,
+                    errorMaxLines: 3,
                     prefixIcon: const Icon(
                       Icons.lock_outline,
                       color: AppColors.navy,
@@ -706,7 +744,9 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
                   obscureText: _obscureNew,
                   decoration: InputDecoration(
                     labelText: 'Nueva contraseña',
-                    hintText: 'Mínimo 6 caracteres',
+                    hintText: 'Mínimo 8 caracteres, 1 letra y 1 número',
+                    errorText: _newError,
+                    errorMaxLines: 3,
                     prefixIcon: const Icon(
                       Icons.vpn_key_outlined,
                       color: AppColors.navy,
@@ -745,6 +785,8 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
                   decoration: InputDecoration(
                     labelText: 'Confirmar nueva contraseña',
                     hintText: 'Repite la nueva contraseña',
+                    errorText: _confirmError,
+                    errorMaxLines: 3,
                     prefixIcon: const Icon(
                       Icons.check_circle_outline,
                       color: AppColors.navy,
@@ -780,17 +822,40 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
                     }
                   },
                 ),
-                if (errorText != null && errorText.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    errorText,
-                    style: const TextStyle(
-                      color: AppColors.error,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
+                if (generalError != null && generalError.isNotEmpty) ...[
+                  const SizedBox(height: 14),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: AppColors.error.withValues(alpha: 0.45),
+                        width: 1,
+                      ),
                     ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          color: AppColors.error,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            generalError,
+                            style: const TextStyle(
+                              color: AppColors.error,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 4,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ],

@@ -90,19 +90,51 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       emit(
         state.copyWith(
           isChangingPassword: false,
-          passwordErrorMessage: 'La contraseña actual no puede estar vacía.',
+          passwordErrorMessage: 'Ingresa tu contraseña actual.',
           passwordChangedSuccessfully: false,
         ),
       );
       return;
     }
 
-    if (newPassword.length < 6) {
+    if (newPassword.isEmpty) {
       emit(
         state.copyWith(
           isChangingPassword: false,
-          passwordErrorMessage:
-              'La nueva contraseña debe tener al menos 6 caracteres.',
+          passwordErrorMessage: 'Ingresa la nueva contraseña.',
+          passwordChangedSuccessfully: false,
+        ),
+      );
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      emit(
+        state.copyWith(
+          isChangingPassword: false,
+          passwordErrorMessage: 'Debe tener al menos 8 caracteres.',
+          passwordChangedSuccessfully: false,
+        ),
+      );
+      return;
+    }
+
+    if (!RegExp(r'[a-zA-Z]').hasMatch(newPassword)) {
+      emit(
+        state.copyWith(
+          isChangingPassword: false,
+          passwordErrorMessage: 'Debe incluir al menos una letra.',
+          passwordChangedSuccessfully: false,
+        ),
+      );
+      return;
+    }
+
+    if (!RegExp(r'[0-9]').hasMatch(newPassword)) {
+      emit(
+        state.copyWith(
+          isChangingPassword: false,
+          passwordErrorMessage: 'Debe incluir al menos un número.',
           passwordChangedSuccessfully: false,
         ),
       );
