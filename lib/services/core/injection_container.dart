@@ -5,6 +5,7 @@ import 'package:torre_de_cartas_movil/repositories/account/account_repository.da
 import 'package:torre_de_cartas_movil/repositories/account/account_repository_impl.dart';
 import 'package:torre_de_cartas_movil/services/api/account_remote_data_source.dart';
 import 'package:torre_de_cartas_movil/services/usecases/account/change_password_usecase.dart';
+import 'package:torre_de_cartas_movil/services/usecases/account/get_account_usecase.dart';
 import 'package:torre_de_cartas_movil/services/usecases/account/update_name_usecase.dart';
 import 'package:torre_de_cartas_movil/services/api/auth_remote_data_source.dart';
 import 'package:torre_de_cartas_movil/repositories/auth/auth_repository_impl.dart';
@@ -176,6 +177,12 @@ void initDependencies() {
   sl.registerLazySingleton<UpdateNameUseCase>(
     () => UpdateNameUseCase(repository: sl<AccountRepository>()),
   );
+  sl.registerLazySingleton<ChangePasswordUseCase>(
+    () => ChangePasswordUseCase(repository: sl<AccountRepository>()),
+  );
+  sl.registerLazySingleton<GetAccountUseCase>(
+    () => GetAccountUseCase(repository: sl<AccountRepository>()),
+  );
 
   sl.registerLazySingleton<AuthBloc>(
     () => AuthBloc(
@@ -227,13 +234,11 @@ void initDependencies() {
       getTournamentsUseCase: sl<GetTournamentsUseCase>(),
     ),
   );
-  sl.registerLazySingleton<ChangePasswordUseCase>(
-    () => ChangePasswordUseCase(repository: sl<AccountRepository>()),
-  );
   sl.registerFactory<AccountBloc>(
     () => AccountBloc(
       updateNameUseCase: sl<UpdateNameUseCase>(),
       changePasswordUseCase: sl<ChangePasswordUseCase>(),
+      getAccountUseCase: sl<GetAccountUseCase>(),
     ),
   );
   sl.registerFactory<AdminBloc>(() => AdminBloc());

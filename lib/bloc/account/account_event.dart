@@ -11,6 +11,10 @@ class LoadAccountEvent extends AccountEvent {
   const LoadAccountEvent();
 }
 
+class LoadPlayerStatsEvent extends AccountEvent {
+  const LoadPlayerStatsEvent();
+}
+
 class ClearAccountErrorEvent extends AccountEvent {
   const ClearAccountErrorEvent();
 }

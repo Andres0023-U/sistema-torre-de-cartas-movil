@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:torre_de_cartas_movil/models/account/history_entry_entity.dart';
+import 'package:torre_de_cartas_movil/models/account/my_stats_entity.dart';
 import 'package:torre_de_cartas_movil/repositories/account/account_repository.dart';
 import 'package:torre_de_cartas_movil/services/api/account_remote_data_source.dart';
 
@@ -32,6 +34,24 @@ class AccountRepositoryImpl implements AccountRepository {
       );
     } catch (e) {
       throw Exception(_translatePasswordError(e));
+    }
+  }
+
+  @override
+  Future<MyStatsEntity> getMyStats() async {
+    try {
+      return await remoteDataSource.getMyStats();
+    } catch (e) {
+      throw Exception('No se pudieron obtener las estadísticas.');
+    }
+  }
+
+  @override
+  Future<List<HistoryEntryEntity>> getMyHistory() async {
+    try {
+      return await remoteDataSource.getMyHistory();
+    } catch (e) {
+      return [];
     }
   }
 

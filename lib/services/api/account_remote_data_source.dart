@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:torre_de_cartas_movil/models/account/history_entry_model.dart';
+import 'package:torre_de_cartas_movil/models/account/my_stats_model.dart';
 import 'package:torre_de_cartas_movil/services/core/dio_client.dart';
 
 class NameAlreadyTakenException implements Exception {
@@ -19,6 +21,8 @@ abstract class AccountRemoteDataSource {
     required String newPassword,
     String? email,
   });
+  Future<MyStatsModel> getMyStats();
+  Future<List<HistoryEntryModel>> getMyHistory();
 }
 
 class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
@@ -81,12 +85,71 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
       );
       return;
     } on DioException catch (e) {
-      // Si Render aún no ha desplegado la ruta (404), usamos la función segura en Supabase
       if (e.response?.statusCode == 404 && email != null && email.isNotEmpty) {
         await _changePasswordViaSupabase(email, currentPassword, newPassword);
         return;
       }
       rethrow;
+    }
+  }
+
+  @override
+  Future<MyStatsModel> getMyStats() async {
+    try {
+      final response = await dioClient.dio.get(
+        '/ranking/me',
+        options: Options(
+          receiveTimeout: const Duration(seconds: 8),
+          sendTimeout: const Duration(seconds: 8),
+        ),
+      );
+      if (response.data is Map) {
+        return MyStatsModel.fromJson(
+          Map<String, dynamic>.from(response.data as Map),
+        );
+      }
+    } catch (_) {
+      // Fallback a cálculo mediante historial si /ranking/me falla
+    }
+
+    // Si falló /ranking/me, obtenemos el historial para armar estadísticas
+    final history = await getMyHistory();
+    final played = history.length;
+    final won = history.where((h) => h.won).length;
+    final lost = history.where((h) => !h.won).length;
+    final points = history.fold<int>(0, (acc, h) => acc + h.points);
+
+    return MyStatsModel(
+      position: null,
+      playerId: 0,
+      played: played,
+      won: won,
+      lost: lost,
+      points: points,
+      tournamentsWon: 0,
+    );
+  }
+
+  @override
+  Future<List<HistoryEntryModel>> getMyHistory() async {
+    try {
+      final response = await dioClient.dio.get(
+        '/players/me/history',
+        options: Options(
+          receiveTimeout: const Duration(seconds: 8),
+          sendTimeout: const Duration(seconds: 8),
+        ),
+      );
+      final rawList = response.data;
+      if (rawList is List) {
+        return rawList
+            .whereType<Map>()
+            .map((e) => HistoryEntryModel.fromJson(Map<String, dynamic>.from(e)))
+            .toList();
+      }
+      return [];
+    } catch (_) {
+      return [];
     }
   }
 
@@ -127,7 +190,6 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
   }
 
   Future<void> _verifyNameNotTaken(String normalizedTarget) async {
-    // Intento 1: Consultar listado de jugadores (/players/)
     try {
       final response = await dioClient.dio.get(
         '/players/',
@@ -154,11 +216,8 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
       }
     } on NameAlreadyTakenException {
       rethrow;
-    } catch (_) {
-      // Si el rol no tiene acceso a /players/, continuamos con rankings y validación de BD
-    }
+    } catch (_) {}
 
-    // Intento 2: Consultar nombres en rankings de torneos visibles
     try {
       final tournamentsRes = await dioClient.dio.get(
         '/tournaments/',
@@ -219,8 +278,6 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
       }
     } on NameAlreadyTakenException {
       rethrow;
-    } catch (_) {
-      // Si falla la consulta previa, el constraint UNIQUE en Supabase bloqueará duplicados en el PUT
-    }
+    } catch (_) {}
   }
 }

@@ -2,17 +2,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torre_de_cartas_movil/bloc/account/account_event.dart';
 import 'package:torre_de_cartas_movil/bloc/account/account_state.dart';
 import 'package:torre_de_cartas_movil/services/usecases/account/change_password_usecase.dart';
+import 'package:torre_de_cartas_movil/services/usecases/account/get_account_usecase.dart';
 import 'package:torre_de_cartas_movil/services/usecases/account/update_name_usecase.dart';
 
 class AccountBloc extends Bloc<AccountEvent, AccountState> {
   final UpdateNameUseCase updateNameUseCase;
   final ChangePasswordUseCase changePasswordUseCase;
+  final GetAccountUseCase getAccountUseCase;
 
   AccountBloc({
     required this.updateNameUseCase,
     required this.changePasswordUseCase,
+    required this.getAccountUseCase,
   }) : super(const AccountState()) {
-    on<LoadAccountEvent>((event, emit) {});
+    on<LoadAccountEvent>(_onLoadAccount);
+    on<LoadPlayerStatsEvent>(_onLoadAccount);
     on<ClearAccountErrorEvent>((event, emit) {
       if (state.errorMessage != null || state.successMessage != null) {
         emit(state.copyWith(clearError: true, clearSuccess: true));
@@ -29,6 +33,34 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     });
     on<UpdateAccountNameRequested>(_onUpdateAccountNameRequested);
     on<ChangePasswordRequested>(_onChangePasswordRequested);
+  }
+
+  Future<void> _onLoadAccount(
+    AccountEvent event,
+    Emitter<AccountState> emit,
+  ) async {
+    emit(state.copyWith(isLoadingStats: true, clearStatsError: true));
+    try {
+      final result = await getAccountUseCase();
+      emit(
+        state.copyWith(
+          isLoadingStats: false,
+          stats: result.stats,
+          history: result.history,
+          clearStatsError: true,
+        ),
+      );
+    } catch (e) {
+      final message = e.toString().replaceAll('Exception: ', '').trim();
+      emit(
+        state.copyWith(
+          isLoadingStats: false,
+          statsErrorMessage: message.isNotEmpty
+              ? message
+              : 'No se pudieron cargar las estadísticas.',
+        ),
+      );
+    }
   }
 
   Future<void> _onUpdateAccountNameRequested(

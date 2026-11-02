@@ -14,27 +14,31 @@ class MyStatsModel extends MyStatsEntity {
 
   factory MyStatsModel.fromJson(Map<String, dynamic> json) {
     return MyStatsModel(
-      position: json['position'] as int?,
-      playerId: json['playerId'] as int? ?? 0,
+      position: (json['position'] as num?)?.toInt(),
+      playerId: (json['playerId'] as num?)?.toInt() ??
+          (json['player_id'] as num?)?.toInt() ??
+          0,
       name: json['name'] as String?,
-      played: json['played'] as int? ?? 0,
-      won: json['won'] as int? ?? 0,
-      lost: json['lost'] as int? ?? 0,
-      points: json['points'] as int? ?? 0,
-      tournamentsWon: json['tournamentsWon'] as int? ?? 0,
+      played: (json['played'] as num?)?.toInt() ?? 0,
+      won: (json['won'] as num?)?.toInt() ?? 0,
+      lost: (json['lost'] as num?)?.toInt() ?? 0,
+      points: (json['points'] as num?)?.toInt() ?? 0,
+      tournamentsWon: (json['tournamentsWon'] as num?)?.toInt() ??
+          (json['tournaments_won'] as num?)?.toInt() ??
+          0,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       if (position != null) 'position': position,
-      'playerId': playerId,
+      'player_id': playerId,
       if (name != null) 'name': name,
       'played': played,
       'won': won,
       'lost': lost,
       'points': points,
-      'tournamentsWon': tournamentsWon,
+      'tournaments_won': tournamentsWon,
     };
   }
 }
