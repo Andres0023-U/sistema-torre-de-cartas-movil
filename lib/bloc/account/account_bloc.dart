@@ -41,7 +41,13 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   ) async {
     emit(state.copyWith(isLoadingStats: true, clearStatsError: true));
     try {
-      final result = await getAccountUseCase();
+      String? email;
+      if (event is LoadPlayerStatsEvent) {
+        email = event.email;
+      } else if (event is LoadAccountEvent) {
+        email = event.email;
+      }
+      final result = await getAccountUseCase(email: email);
       emit(
         state.copyWith(
           isLoadingStats: false,

@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:torre_de_cartas_movil/bloc/account/account_bloc.dart';
 import 'package:torre_de_cartas_movil/bloc/account/account_event.dart';
 import 'package:torre_de_cartas_movil/bloc/account/account_state.dart';
+import 'package:torre_de_cartas_movil/bloc/auth/auth_bloc.dart';
 import 'package:torre_de_cartas_movil/models/account/history_entry_entity.dart';
 import 'package:torre_de_cartas_movil/models/account/my_stats_entity.dart';
 import 'package:torre_de_cartas_movil/services/core/injection_container.dart';
@@ -24,7 +25,9 @@ class _PlayerStatsPageState extends State<PlayerStatsPage> {
   @override
   void initState() {
     super.initState();
-    _accountBloc = sl<AccountBloc>()..add(const LoadPlayerStatsEvent());
+    final authEmail = context.read<AuthBloc>().state.email;
+    _accountBloc = sl<AccountBloc>()
+      ..add(LoadPlayerStatsEvent(email: authEmail));
   }
 
   @override
@@ -309,8 +312,11 @@ class _PlayerStatsPageState extends State<PlayerStatsPage> {
                         backgroundColor: AppColors.navy,
                         foregroundColor: Colors.white,
                       ),
-                      onPressed: () =>
-                          _accountBloc.add(const LoadPlayerStatsEvent()),
+                      onPressed: () {
+                        final authEmail = context.read<AuthBloc>().state.email;
+                        _accountBloc
+                            .add(LoadPlayerStatsEvent(email: authEmail));
+                      },
                       icon: const Icon(Icons.refresh),
                       label: const Text('Reintentar'),
                     ),
@@ -336,7 +342,8 @@ class _PlayerStatsPageState extends State<PlayerStatsPage> {
             color: AppColors.gold,
             backgroundColor: AppColors.navy,
             onRefresh: () async {
-              _accountBloc.add(const LoadPlayerStatsEvent());
+              final authEmail = context.read<AuthBloc>().state.email;
+              _accountBloc.add(LoadPlayerStatsEvent(email: authEmail));
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -486,3 +493,4 @@ class _PlayerStatsPageState extends State<PlayerStatsPage> {
     );
   }
 }
+

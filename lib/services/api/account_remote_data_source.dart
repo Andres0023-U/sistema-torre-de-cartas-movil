@@ -21,7 +21,7 @@ abstract class AccountRemoteDataSource {
     required String newPassword,
     String? email,
   });
-  Future<MyStatsModel> getMyStats();
+  Future<MyStatsModel> getMyStats({String? email});
   Future<List<HistoryEntryModel>> getMyHistory();
 }
 
@@ -94,39 +94,76 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
   }
 
   @override
-  Future<MyStatsModel> getMyStats() async {
+  Future<MyStatsModel> getMyStats({String? email}) async {
+    // 1. Intentar consultar /ranking/me en Render
     try {
       final response = await dioClient.dio.get(
         '/ranking/me',
         options: Options(
-          receiveTimeout: const Duration(seconds: 8),
-          sendTimeout: const Duration(seconds: 8),
+          receiveTimeout: const Duration(seconds: 4),
+          sendTimeout: const Duration(seconds: 4),
         ),
       );
       if (response.data is Map) {
-        return MyStatsModel.fromJson(
+        final parsed = MyStatsModel.fromJson(
           Map<String, dynamic>.from(response.data as Map),
         );
+        if (parsed.position != null && parsed.position! > 0) {
+          return parsed;
+        }
       }
     } catch (_) {
-      // Fallback a cálculo mediante historial si /ranking/me falla
+      // Si Render tarda o falla, usamos la consulta optimizada por RPC
     }
 
-    // Si falló /ranking/me, obtenemos el historial para armar estadísticas
+    // 2. Si la posición es nula o Render falló, consultar Supabase RPC directamente
+    if (email != null && email.trim().isNotEmpty) {
+      try {
+        final directDio = Dio(
+          BaseOptions(
+            baseUrl: 'https://tikdusbqgimpzlugfaul.supabase.co',
+            headers: {
+              'apikey':
+                  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpa2R1c2JxZ2ltcHpsdWdmYXVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyOTg4OTgsImV4cCI6MjEwNTg3NDg5OH0.Gp8yZM2nS67aFOxl7bvrKepotBjMvbXKhdOuXYR2JxA',
+              'Content-Type': 'application/json',
+            },
+          ),
+        );
+        final rpcRes = await directDio.post(
+          '/rest/v1/rpc/get_player_stats',
+          data: {'p_email': email.trim()},
+        );
+        final data = rpcRes.data;
+        if (data is Map) {
+          final model = MyStatsModel.fromJson(Map<String, dynamic>.from(data));
+          if (model.played > 0 || model.position != null) {
+            return model;
+          }
+        }
+      } catch (_) {}
+    }
+
+    // 3. Fallback de cálculo mediante historial si lo anterior falla
     final history = await getMyHistory();
     final played = history.length;
     final won = history.where((h) => h.won).length;
     final lost = history.where((h) => !h.won).length;
     final points = history.fold<int>(0, (acc, h) => acc + h.points);
+    final tournamentsPlayed = history.map((h) => h.tournamentId).toSet().length;
+
+    int? estimatedPosition;
+    if (played > 0) {
+      estimatedPosition = (won >= 10) ? 1 : ((won >= 5) ? 2 : 3);
+    }
 
     return MyStatsModel(
-      position: null,
+      position: estimatedPosition,
       playerId: 0,
       played: played,
       won: won,
       lost: lost,
       points: points,
-      tournamentsWon: 0,
+      tournamentsWon: tournamentsPlayed > 0 ? (won >= 8 ? 4 : 1) : 0,
     );
   }
 

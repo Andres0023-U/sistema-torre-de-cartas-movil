@@ -38,9 +38,9 @@ class AccountRepositoryImpl implements AccountRepository {
   }
 
   @override
-  Future<MyStatsEntity> getMyStats() async {
+  Future<MyStatsEntity> getMyStats({String? email}) async {
     try {
-      return await remoteDataSource.getMyStats();
+      return await remoteDataSource.getMyStats(email: email);
     } catch (e) {
       throw Exception('No se pudieron obtener las estadísticas.');
     }

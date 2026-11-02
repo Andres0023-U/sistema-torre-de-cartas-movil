@@ -8,11 +8,21 @@ abstract class AccountEvent extends Equatable {
 }
 
 class LoadAccountEvent extends AccountEvent {
-  const LoadAccountEvent();
+  final String? email;
+
+  const LoadAccountEvent({this.email});
+
+  @override
+  List<Object?> get props => [email];
 }
 
 class LoadPlayerStatsEvent extends AccountEvent {
-  const LoadPlayerStatsEvent();
+  final String? email;
+
+  const LoadPlayerStatsEvent({this.email});
+
+  @override
+  List<Object?> get props => [email];
 }
 
 class ClearAccountErrorEvent extends AccountEvent {

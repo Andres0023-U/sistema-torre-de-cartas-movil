@@ -8,6 +8,6 @@ abstract class AccountRepository {
     required String newPassword,
     String? email,
   });
-  Future<MyStatsEntity> getMyStats();
+  Future<MyStatsEntity> getMyStats({String? email});
   Future<List<HistoryEntryEntity>> getMyHistory();
 }

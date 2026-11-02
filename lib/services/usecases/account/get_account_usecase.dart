@@ -17,8 +17,8 @@ class GetAccountUseCase {
 
   GetAccountUseCase({required this.repository});
 
-  Future<PlayerStatsResult> call() async {
-    final statsFuture = repository.getMyStats();
+  Future<PlayerStatsResult> call({String? email}) async {
+    final statsFuture = repository.getMyStats(email: email);
     final historyFuture = repository.getMyHistory();
 
     final results = await Future.wait([statsFuture, historyFuture]);

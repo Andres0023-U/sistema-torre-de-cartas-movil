@@ -338,7 +338,7 @@ class _AccountPageState extends State<AccountPage> {
                         onPressed: () {
                           context.push('/account/stats');
                         },
-                        icon: const Icon(Icons.shield_outlined, size: 20),
+                        icon: const Icon(Icons.query_stats, size: 20),
                         label: const Text(
                           'Estadísticas del jugador',
                           style: TextStyle(
