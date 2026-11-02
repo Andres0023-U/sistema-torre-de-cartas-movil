@@ -206,3 +206,4 @@ class _SpiderChartPainter extends CustomPainter {
         oldDelegate.axes != axes;
   }
 }
+

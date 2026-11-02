@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:torre_de_cartas_movil/pages/account/player_stats_page.dart';
 import 'package:torre_de_cartas_movil/services/core/injection_container.dart';
 import 'package:torre_de_cartas_movil/pages/account/account_page.dart';
 import 'package:torre_de_cartas_movil/pages/admin/users_roles_page.dart';
@@ -221,6 +222,10 @@ GoRouter createRouter(Listenable refreshListenable) {
             path: '/account',
             builder: (context, state) => const AccountPage(),
             routes: [
+              GoRoute(
+                path: 'stats',
+                builder: (context, state) => const PlayerStatsPage(),
+              ),
               GoRoute(
                 path: 'change-password',
                 builder: (context, state) => const ChangePasswordPage(),
