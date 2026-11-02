@@ -4,6 +4,72 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/card_entity.dart';
 
+/// Estilo visual asociado a una rareza de carta.
+class RarityStyle {
+  final Color color;
+  final double borderWidth;
+  final double glowBlur;
+  final double glowOpacity;
+
+  const RarityStyle({
+    required this.color,
+    required this.borderWidth,
+    required this.glowBlur,
+    required this.glowOpacity,
+  });
+
+  /// Común: verde. Poco común: azul. Rara: morado. Legendaria: amarillo.
+  /// Si llega otra rareza, se usa un estilo neutro.
+  static RarityStyle of(String? rarity) {
+    final key = (rarity ?? '')
+        .toLowerCase()
+        .replaceAll('í', 'i')
+        .replaceAll('ú', 'u')
+        .replaceAll('á', 'a')
+        .replaceAll('é', 'e')
+        .replaceAll('ó', 'o')
+        .trim();
+
+    switch (key) {
+      case 'comun':
+        return const RarityStyle(
+          color: Color(0xFF2E9E5B),
+          borderWidth: 2.0,
+          glowBlur: 6,
+          glowOpacity: 0.25,
+        );
+      case 'poco comun':
+        return const RarityStyle(
+          color: Color(0xFF2F7FD1),
+          borderWidth: 2.5,
+          glowBlur: 10,
+          glowOpacity: 0.4,
+        );
+      case 'rara':
+        return const RarityStyle(
+          color: Color(0xFF8E44C9),
+          borderWidth: 3.0,
+          glowBlur: 16,
+          glowOpacity: 0.55,
+        );
+      case 'legendaria':
+        return const RarityStyle(
+          color: Color(0xFFF2B705),
+          borderWidth: 3.5,
+          glowBlur: 24,
+          glowOpacity: 0.75,
+        );
+      default:
+        return const RarityStyle(
+          color: AppColors.line,
+          borderWidth: 1.5,
+          glowBlur: 4,
+          glowOpacity: 0.2,
+        );
+    }
+  }
+}
+
 /// Carta grande (ilustración + datos + controles de cantidad) pensada para
 /// mostrarse como página de un carrusel horizontal.
 class CardCarouselItem extends StatelessWidget {
@@ -53,6 +119,7 @@ class CardCarouselItem extends StatelessWidget {
         effect.trim().isNotEmpty &&
         effect.trim().toLowerCase() != 'ninguno';
     final description = card?.description ?? '';
+    final style = RarityStyle.of(card?.rarity);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -71,7 +138,7 @@ class CardCarouselItem extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildImage(imageWidth, imageHeight, value),
+                _buildImage(imageWidth, imageHeight, value, style),
                 const SizedBox(height: 10),
                 Text(
                   name,
@@ -82,16 +149,8 @@ class CardCarouselItem extends StatelessWidget {
                     color: AppColors.ink,
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  '${card?.type ?? ''} · ${(card?.rarity ?? '').toUpperCase()}',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.sourceSans3(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.goldDark,
-                  ),
-                ),
+                const SizedBox(height: 4),
+                _buildTypeAndRarity(style),
                 if (description.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(
@@ -120,7 +179,7 @@ class CardCarouselItem extends StatelessWidget {
                   ),
                 ],
                 const SizedBox(height: 6),
-                _buildControls(),
+                _buildControls(style),
               ],
             ),
           ),
@@ -129,47 +188,85 @@ class CardCarouselItem extends StatelessWidget {
     );
   }
 
-  Widget _buildImage(double width, double height, int value) {
+  Widget _buildTypeAndRarity(RarityStyle style) {
+    final rarity = card?.rarity ?? '';
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          card?.type ?? '',
+          style: GoogleFonts.sourceSans3(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: AppColors.muted,
+          ),
+        ),
+        if (rarity.isNotEmpty) ...[
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+            decoration: BoxDecoration(
+              color: style.color.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: style.color, width: 1.2),
+            ),
+            child: Text(
+              rarity.toUpperCase(),
+              style: GoogleFonts.sourceSans3(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: style.color,
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildImage(
+    double width,
+    double height,
+    int value,
+    RarityStyle style,
+  ) {
     return Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
         color: AppColors.navy,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: quantity > 0 ? AppColors.gold : AppColors.line,
-          width: quantity > 0 ? 2.0 : 1.0,
-        ),
+        border: Border.all(color: style.color, width: style.borderWidth),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: style.color.withValues(alpha: style.glowOpacity),
+            blurRadius: style.glowBlur,
+            spreadRadius: 1,
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14 - style.borderWidth),
         child: Stack(
           fit: StackFit.expand,
           children: [
             Image.asset(
               'assets/images/cards/$cardId.webp',
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => const Center(
-                child: Icon(Icons.style, color: AppColors.gold, size: 48),
+              errorBuilder: (context, error, stackTrace) => Center(
+                child: Icon(Icons.style, color: style.color, size: 48),
               ),
             ),
             Positioned(
               top: 8,
               left: 8,
-              child: _Badge(text: '$value'),
+              child: _Badge(text: '$value', color: style.color),
             ),
             if (quantity > 0)
               Positioned(
                 top: 8,
                 right: 8,
-                child: _Badge(text: 'x$quantity'),
+                child: _Badge(text: 'x$quantity', color: style.color),
               ),
           ],
         ),
@@ -177,7 +274,7 @@ class CardCarouselItem extends StatelessWidget {
     );
   }
 
-  Widget _buildControls() {
+  Widget _buildControls(RarityStyle style) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -202,7 +299,7 @@ class CardCarouselItem extends StatelessWidget {
         ),
         IconButton(
           icon: const Icon(Icons.add_circle, size: 34),
-          color: AppColors.goldDark,
+          color: style.color,
           disabledColor: Colors.grey.shade300,
           tooltip: _incrementTooltip,
           onPressed: _canIncrement && !isUpdating ? onIncrement : null,
@@ -214,8 +311,9 @@ class CardCarouselItem extends StatelessWidget {
 
 class _Badge extends StatelessWidget {
   final String text;
+  final Color color;
 
-  const _Badge({required this.text});
+  const _Badge({required this.text, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -224,17 +322,16 @@ class _Badge extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.navy.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.gold, width: 1),
+        border: Border.all(color: color, width: 1.5),
       ),
       child: Text(
         text,
         style: GoogleFonts.sourceSans3(
           fontSize: 14,
           fontWeight: FontWeight.bold,
-          color: AppColors.gold,
+          color: color,
         ),
       ),
     );
   }
 }
-
