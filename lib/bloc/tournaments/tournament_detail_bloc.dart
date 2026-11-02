@@ -1,0 +1,182 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/round_entity.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_entity.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_player_entity.dart';
+import 'package:torre_de_cartas_movil/services/usecases/tournaments/get_available_players_usecase.dart';
+import 'package:torre_de_cartas_movil/services/usecases/tournaments/get_tournament_players_usecase.dart';
+import 'package:torre_de_cartas_movil/services/usecases/tournaments/get_tournament_rounds_usecase.dart';
+import 'package:torre_de_cartas_movil/services/usecases/tournaments/get_tournaments_usecase.dart';
+import 'package:torre_de_cartas_movil/services/usecases/tournaments/register_player_usecase.dart';
+import 'package:torre_de_cartas_movil/services/usecases/tournaments/start_tournament_usecase.dart';
+import 'package:torre_de_cartas_movil/bloc/tournaments/tournament_detail_event.dart';
+import 'package:torre_de_cartas_movil/bloc/tournaments/tournament_detail_state.dart';
+
+class TournamentDetailBloc
+    extends Bloc<TournamentDetailEvent, TournamentDetailState> {
+  final GetTournamentsUseCase getTournamentsUseCase;
+  final GetTournamentPlayersUseCase getTournamentPlayersUseCase;
+  final GetTournamentRoundsUseCase getTournamentRoundsUseCase;
+  final StartTournamentUseCase startTournamentUseCase;
+  final GetAvailablePlayersUseCase getAvailablePlayersUseCase;
+  final RegisterPlayerUseCase registerPlayerUseCase;
+
+  TournamentDetailBloc({
+    required this.getTournamentsUseCase,
+    required this.getTournamentPlayersUseCase,
+    required this.getTournamentRoundsUseCase,
+    required this.startTournamentUseCase,
+    required this.getAvailablePlayersUseCase,
+    required this.registerPlayerUseCase,
+  }) : super(const TournamentDetailInitial()) {
+    on<AvailablePlayersRequested>((event, emit) async {
+      final current = state;
+      if (current is! TournamentDetailLoaded ||
+          current.isLoadingAvailablePlayers) {
+        return;
+      }
+      emit(current.copyWith(
+        isLoadingAvailablePlayers: true,
+        availablePlayersError: null,
+      ));
+      try {
+        final available = await getAvailablePlayersUseCase();
+        final latest = state;
+        if (latest is TournamentDetailLoaded) {
+          emit(latest.copyWith(
+            availablePlayers: available,
+            isLoadingAvailablePlayers: false,
+            availablePlayersError: null,
+          ));
+        }
+      } catch (e) {
+        final latest = state;
+        if (latest is TournamentDetailLoaded) {
+          emit(latest.copyWith(
+            isLoadingAvailablePlayers: false,
+            availablePlayersError: _messageOf(e),
+          ));
+        }
+      }
+    });
+
+    on<PlayerRegistrationRequested>((event, emit) async {
+      final current = state;
+      if (current is! TournamentDetailLoaded ||
+          current.registeringPlayerId != null) {
+        return;
+      }
+      final tournamentId = current.tournament.tournamentId;
+      emit(current.copyWith(registeringPlayerId: event.player.playerId));
+
+      try {
+        await registerPlayerUseCase(tournamentId, event.player.playerId);
+      } catch (e) {
+        final latest = state;
+        if (latest is TournamentDetailLoaded) {
+          emit(latest.copyWith(
+            registeringPlayerId: null,
+            errorMessage: _messageOf(e),
+          ));
+        }
+        return;
+      }
+
+      try {
+        final fresh = await _load(tournamentId);
+        emit(fresh.copyWith(
+          successMessage: '${event.player.name} inscrito',
+        ));
+      } catch (e) {
+        // La inscripción se hizo, pero no se pudo recargar: se conservan
+        // los datos mostrados y se avisa del error.
+        final latest = state;
+        if (latest is TournamentDetailLoaded) {
+          emit(latest.copyWith(
+            registeringPlayerId: null,
+            errorMessage: _messageOf(e),
+          ));
+        }
+      }
+    });
+
+    on<TournamentDetailRequested>((event, emit) async {
+      emit(const TournamentDetailLoading());
+      try {
+        emit(await _load(event.tournamentId));
+      } catch (e) {
+        emit(TournamentDetailFailure(_messageOf(e)));
+      }
+    });
+
+    on<TournamentStartRequested>((event, emit) async {
+      final current = state;
+      if (current is! TournamentDetailLoaded || current.isStarting) return;
+
+      final tournamentId = current.tournament.tournamentId;
+      emit(TournamentDetailLoaded(
+        tournament: current.tournament,
+        players: current.players,
+        rounds: current.rounds,
+        isStarting: true,
+      ));
+
+      try {
+        await startTournamentUseCase(tournamentId);
+      } catch (e) {
+        emit(TournamentDetailLoaded(
+          tournament: current.tournament,
+          players: current.players,
+          rounds: current.rounds,
+          errorMessage: _messageOf(e),
+        ));
+        return;
+      }
+
+      try {
+        final fresh = await _load(tournamentId);
+        emit(TournamentDetailLoaded(
+          tournament: fresh.tournament,
+          players: fresh.players,
+          rounds: fresh.rounds,
+          successMessage: 'Torneo iniciado',
+        ));
+      } catch (e) {
+        // El torneo sí se inició, pero no se pudo recargar: se conservan
+        // los datos mostrados y se avisa del error.
+        emit(TournamentDetailLoaded(
+          tournament: current.tournament,
+          players: current.players,
+          rounds: current.rounds,
+          errorMessage: _messageOf(e),
+        ));
+      }
+    });
+  }
+
+  Future<TournamentDetailLoaded> _load(int tournamentId) async {
+    final tournaments = await getTournamentsUseCase();
+    TournamentEntity? tournament;
+    for (final t in tournaments) {
+      if (t.tournamentId == tournamentId) {
+        tournament = t;
+        break;
+      }
+    }
+    if (tournament == null) {
+      throw Exception('No se encontró el torneo');
+    }
+
+    final results = await Future.wait([
+      getTournamentPlayersUseCase(tournamentId),
+      getTournamentRoundsUseCase(tournamentId),
+    ]);
+
+    return TournamentDetailLoaded(
+      tournament: tournament,
+      players: results[0] as List<TournamentPlayerEntity>,
+      rounds: results[1] as List<RoundEntity>,
+    );
+  }
+
+  String _messageOf(Object e) => e.toString().replaceAll('Exception: ', '');
+}

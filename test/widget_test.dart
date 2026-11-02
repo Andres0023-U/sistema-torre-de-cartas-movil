@@ -1,7 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:torre_de_cartas_movil/core/di/injection_container.dart' as di;
+import 'package:torre_de_cartas_movil/services/core/injection_container.dart' as di;
 import 'package:torre_de_cartas_movil/main.dart';
 
 void main() {

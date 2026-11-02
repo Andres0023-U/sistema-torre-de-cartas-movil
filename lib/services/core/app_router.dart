@@ -1,0 +1,233 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:torre_de_cartas_movil/services/core/injection_container.dart';
+import 'package:torre_de_cartas_movil/pages/account/account_page.dart';
+import 'package:torre_de_cartas_movil/pages/admin/users_roles_page.dart';
+import 'package:torre_de_cartas_movil/models/auth/user_role.dart';
+import 'package:torre_de_cartas_movil/bloc/auth/auth_bloc.dart';
+import 'package:torre_de_cartas_movil/bloc/auth/auth_state.dart';
+import 'package:torre_de_cartas_movil/pages/auth/change_password_page.dart';
+import 'package:torre_de_cartas_movil/pages/auth/login_page.dart';
+import 'package:torre_de_cartas_movil/pages/auth/pending_account_page.dart';
+import 'package:torre_de_cartas_movil/pages/auth/splash_page.dart';
+import 'package:torre_de_cartas_movil/pages/decks/deck_detail_page.dart';
+import 'package:torre_de_cartas_movil/pages/decks/my_decks_page.dart';
+import 'package:torre_de_cartas_movil/pages/decks/round_deck_page.dart';
+import 'package:torre_de_cartas_movil/pages/ranking/ranking_page.dart';
+import 'package:torre_de_cartas_movil/pages/tournaments/create_tournament_page.dart';
+import 'package:torre_de_cartas_movil/pages/tournaments/register_result_page.dart';
+import 'package:torre_de_cartas_movil/pages/tournaments/tournament_detail_page.dart';
+import 'package:torre_de_cartas_movil/pages/tournaments/tournaments_page.dart';
+import 'package:torre_de_cartas_movil/pages/main_shell_page.dart';
+
+class GoRouterRefreshStream extends ChangeNotifier {
+  late final StreamSubscription<dynamic> _subscription;
+
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    notifyListeners();
+    _subscription = stream.asBroadcastStream().listen(
+          (_) => notifyListeners(),
+        );
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
+
+String _getHomeRouteForRole(UserRole? role) {
+  switch (role) {
+    case UserRole.admin:
+      return '/admin/users';
+    case UserRole.user:
+      return '/pending-account';
+    case UserRole.player:
+    case UserRole.organizer:
+    default:
+      return '/tournaments';
+  }
+}
+
+bool _isRouteAllowedForRole(String location, UserRole? role) {
+  if (role == null) return false;
+
+  final rules = <MapEntry<RegExp, List<UserRole>>>[
+    // Specific routes first
+    MapEntry(
+      RegExp(r'^/tournaments/create$'),
+      [UserRole.organizer, UserRole.admin],
+    ),
+    MapEntry(
+      RegExp(r'^/tournaments/[^/]+/matches/[^/]+/result$'),
+      [UserRole.organizer],
+    ),
+    MapEntry(
+      RegExp(r'^/tournaments/[^/]+/rounds/[^/]+/deck$'),
+      [UserRole.player],
+    ),
+    MapEntry(
+      RegExp(r'^/tournaments/[^/]+$'),
+      [UserRole.player, UserRole.organizer, UserRole.admin],
+    ),
+    MapEntry(
+      RegExp(r'^/tournaments$'),
+      [UserRole.player, UserRole.organizer, UserRole.admin],
+    ),
+    MapEntry(
+      RegExp(r'^/decks?(/.*)?$'),
+      [UserRole.player],
+    ),
+    MapEntry(
+      RegExp(r'^/ranking$'),
+      [UserRole.player, UserRole.organizer, UserRole.admin],
+    ),
+    MapEntry(
+      RegExp(r'^/admin/users$'),
+      [UserRole.admin],
+    ),
+    MapEntry(
+      RegExp(r'^/pending-account$'),
+      [UserRole.user],
+    ),
+    MapEntry(
+      RegExp(r'^/account(/.*)?$'),
+      [UserRole.player, UserRole.organizer, UserRole.admin, UserRole.user],
+    ),
+  ];
+
+  for (final rule in rules) {
+    if (rule.key.hasMatch(location)) {
+      return rule.value.contains(role);
+    }
+  }
+
+  return false;
+}
+
+GoRouter createRouter(Listenable refreshListenable) {
+  return GoRouter(
+    initialLocation: '/splash',
+    refreshListenable: refreshListenable,
+    redirect: (context, state) {
+      final authState = sl<AuthBloc>().state;
+      final role = authState.role;
+      final isAuthenticated =
+          authState.status == AuthStatus.authenticated && role != null;
+      final isSplashRoute = state.matchedLocation == '/splash';
+      final isAuthRoute = state.matchedLocation == '/login';
+
+      if (authState.status == AuthStatus.initial) {
+        return isSplashRoute ? null : '/splash';
+      }
+
+      if (isSplashRoute) {
+        return isAuthenticated ? _getHomeRouteForRole(role) : '/login';
+      }
+
+      if (!isAuthenticated) {
+        return isAuthRoute ? null : '/login';
+      }
+
+      final homeRoute = _getHomeRouteForRole(role);
+      if (isAuthRoute || state.matchedLocation == '/') {
+        return homeRoute;
+      }
+
+      if (!_isRouteAllowedForRole(state.matchedLocation, role)) {
+        return homeRoute;
+      }
+
+      return null;
+    },
+    routes: [
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) => const SplashPage(),
+      ),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginPage(),
+      ),
+      ShellRoute(
+        builder: (context, state, child) => MainShellPage(child: child),
+        routes: [
+          GoRoute(
+            path: '/tournaments',
+            builder: (context, state) => const TournamentsPage(),
+            routes: [
+              GoRoute(
+                path: 'create',
+                builder: (context, state) => const CreateTournamentPage(),
+              ),
+              GoRoute(
+                path: ':id',
+                builder: (context, state) => TournamentDetailPage(
+                  tournamentId: state.pathParameters['id'] ?? '',
+                ),
+                routes: [
+                  GoRoute(
+                    path: 'matches/:matchId/result',
+                    builder: (context, state) => RegisterResultPage(
+                      tournamentId: state.pathParameters['id'] ?? '',
+                      matchId: state.pathParameters['matchId'] ?? '',
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'rounds/:roundId/deck',
+                    builder: (context, state) => RoundDeckPage(
+                      tournamentId: state.pathParameters['id'] ?? '',
+                      roundId: state.pathParameters['roundId'] ?? '',
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/decks',
+            builder: (context, state) => const MyDecksPage(),
+            routes: [
+              GoRoute(
+                path: ':id',
+                builder: (context, state) => DeckDetailPage(
+                  deckId: state.pathParameters['id'] ?? '',
+                ),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/deck/:id',
+            builder: (context, state) => DeckDetailPage(
+              deckId: state.pathParameters['id'] ?? '',
+            ),
+          ),
+          GoRoute(
+            path: '/ranking',
+            builder: (context, state) => const RankingPage(),
+          ),
+          GoRoute(
+            path: '/account',
+            builder: (context, state) => const AccountPage(),
+            routes: [
+              GoRoute(
+                path: 'change-password',
+                builder: (context, state) => const ChangePasswordPage(),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/pending-account',
+            builder: (context, state) => const PendingAccountPage(),
+          ),
+          GoRoute(
+            path: '/admin/users',
+            builder: (context, state) => const UsersRolesPage(),
+          ),
+        ],
+      ),
+    ],
+  );
+}

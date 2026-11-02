@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:torre_de_cartas_movil/core/di/injection_container.dart' as di;
-import 'package:torre_de_cartas_movil/core/di/injection_container.dart' show sl;
-import 'package:torre_de_cartas_movil/core/router/app_router.dart';
-import 'package:torre_de_cartas_movil/core/theme/app_theme.dart';
-import 'package:torre_de_cartas_movil/features/account/presentation/bloc/account_bloc.dart';
-import 'package:torre_de_cartas_movil/features/admin/presentation/bloc/admin_bloc.dart';
-import 'package:torre_de_cartas_movil/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:torre_de_cartas_movil/features/auth/presentation/bloc/auth_event.dart';
-import 'package:torre_de_cartas_movil/features/auth/presentation/bloc/auth_state.dart';
-import 'package:torre_de_cartas_movil/features/decks/presentation/bloc/decks_bloc.dart';
-import 'package:torre_de_cartas_movil/features/ranking/presentation/bloc/ranking_bloc.dart';
-import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/tournaments_bloc.dart';
+import 'package:torre_de_cartas_movil/services/core/injection_container.dart' as di;
+import 'package:torre_de_cartas_movil/services/core/injection_container.dart' show sl;
+import 'package:torre_de_cartas_movil/services/core/app_router.dart';
+import 'package:torre_de_cartas_movil/widgets/theme/app_theme.dart';
+import 'package:torre_de_cartas_movil/bloc/account/account_bloc.dart';
+import 'package:torre_de_cartas_movil/bloc/admin/admin_bloc.dart';
+import 'package:torre_de_cartas_movil/bloc/auth/auth_bloc.dart';
+import 'package:torre_de_cartas_movil/bloc/auth/auth_event.dart';
+import 'package:torre_de_cartas_movil/bloc/auth/auth_state.dart';
+import 'package:torre_de_cartas_movil/bloc/decks/decks_bloc.dart';
+import 'package:torre_de_cartas_movil/bloc/ranking/ranking_bloc.dart';
+import 'package:torre_de_cartas_movil/bloc/tournaments/tournaments_bloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
