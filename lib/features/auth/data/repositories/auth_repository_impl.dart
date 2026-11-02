@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
-import '../../domain/entities/login_response_entity.dart';
-import '../../domain/entities/user_entity.dart';
-import '../../domain/repositories/auth_repository.dart';
-import '../datasources/auth_remote_data_source.dart';
+import 'package:torre_de_cartas_movil/models/auth/login_response_entity.dart';
+import 'package:torre_de_cartas_movil/models/auth/user_entity.dart';
+import 'package:torre_de_cartas_movil/features/auth/domain/repositories/auth_repository.dart';
+import 'package:torre_de_cartas_movil/features/auth/data/datasources/auth_remote_data_source.dart';
 
 class AuthExpiredException implements Exception {
   final String message;

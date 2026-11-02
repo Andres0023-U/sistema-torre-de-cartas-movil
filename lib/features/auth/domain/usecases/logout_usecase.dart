@@ -1,5 +1,5 @@
-import '../../../../core/network/token_holder.dart';
-import '../../../../core/storage/session_storage.dart';
+import 'package:torre_de_cartas_movil/core/network/token_holder.dart';
+import 'package:torre_de_cartas_movil/core/storage/session_storage.dart';
 
 class LogoutUseCase {
   final TokenHolder tokenHolder;

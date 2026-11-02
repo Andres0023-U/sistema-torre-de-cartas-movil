@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../domain/entities/round_entity.dart';
-import '../../domain/entities/tournament_entity.dart';
-import '../../domain/entities/tournament_player_entity.dart';
-import '../utils/tournament_formatters.dart';
+import 'package:torre_de_cartas_movil/core/theme/app_colors.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/round_entity.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_entity.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_player_entity.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/utils/tournament_formatters.dart';
 
 /// Cabecera + pestañas "Inscritos" y "Rondas" compartidas por las vistas
 /// de jugador, organizador y admin.

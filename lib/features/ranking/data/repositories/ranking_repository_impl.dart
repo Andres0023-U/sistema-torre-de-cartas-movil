@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import '../../domain/entities/global_ranking_entry_entity.dart';
-import '../../domain/repositories/ranking_repository.dart';
-import '../datasources/ranking_remote_data_source.dart';
+import 'package:torre_de_cartas_movil/models/ranking/global_ranking_entry_entity.dart';
+import 'package:torre_de_cartas_movil/features/ranking/domain/repositories/ranking_repository.dart';
+import 'package:torre_de_cartas_movil/features/ranking/data/datasources/ranking_remote_data_source.dart';
 
 class RankingRepositoryImpl implements RankingRepository {
   final RankingRemoteDataSource remoteDataSource;

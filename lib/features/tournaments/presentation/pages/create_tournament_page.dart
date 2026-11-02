@@ -3,15 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/di/injection_container.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../domain/entities/tournament_create_entity.dart';
-import '../bloc/create_tournament_bloc.dart';
-import '../bloc/create_tournament_event.dart';
-import '../bloc/create_tournament_state.dart';
-import '../bloc/tournaments_bloc.dart';
-import '../bloc/tournaments_event.dart';
-import '../utils/tournament_formatters.dart';
+import 'package:torre_de_cartas_movil/core/di/injection_container.dart';
+import 'package:torre_de_cartas_movil/core/theme/app_colors.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_create_entity.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/create_tournament_bloc.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/create_tournament_event.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/create_tournament_state.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/tournaments_bloc.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/tournaments_event.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/utils/tournament_formatters.dart';
 
 class CreateTournamentPage extends StatelessWidget {
   const CreateTournamentPage({super.key});

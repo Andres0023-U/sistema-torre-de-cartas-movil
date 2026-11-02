@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/di/injection_container.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../auth/domain/entities/user_role.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../bloc/tournament_detail_bloc.dart';
-import '../bloc/tournament_detail_event.dart';
-import '../bloc/tournament_detail_state.dart';
-import '../widgets/organizer_tournament_detail_view.dart';
-import '../widgets/player_tournament_detail_view.dart';
+import 'package:torre_de_cartas_movil/core/di/injection_container.dart';
+import 'package:torre_de_cartas_movil/core/theme/app_colors.dart';
+import 'package:torre_de_cartas_movil/models/auth/user_role.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/tournament_detail_bloc.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/tournament_detail_event.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/tournament_detail_state.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/widgets/organizer_tournament_detail_view.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/widgets/player_tournament_detail_view.dart';
 
 class TournamentDetailPage extends StatelessWidget {
   final String tournamentId;

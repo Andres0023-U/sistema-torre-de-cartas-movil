@@ -1,12 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/usecases/add_card_to_deck_usecase.dart';
-import '../../domain/usecases/get_cards_catalog_usecase.dart';
-import '../../domain/usecases/get_deck_by_id_usecase.dart';
-import '../../domain/usecases/get_deck_cards_usecase.dart';
-import '../../domain/usecases/remove_card_from_deck_usecase.dart';
-import '../../domain/usecases/update_card_quantity_usecase.dart';
-import 'deck_detail_event.dart';
-import 'deck_detail_state.dart';
+import 'package:torre_de_cartas_movil/features/decks/domain/usecases/add_card_to_deck_usecase.dart';
+import 'package:torre_de_cartas_movil/features/decks/domain/usecases/get_cards_catalog_usecase.dart';
+import 'package:torre_de_cartas_movil/features/decks/domain/usecases/get_deck_by_id_usecase.dart';
+import 'package:torre_de_cartas_movil/features/decks/domain/usecases/get_deck_cards_usecase.dart';
+import 'package:torre_de_cartas_movil/features/decks/domain/usecases/remove_card_from_deck_usecase.dart';
+import 'package:torre_de_cartas_movil/features/decks/domain/usecases/update_card_quantity_usecase.dart';
+import 'package:torre_de_cartas_movil/features/decks/presentation/bloc/deck_detail_event.dart';
+import 'package:torre_de_cartas_movil/features/decks/presentation/bloc/deck_detail_state.dart';
 
 class DeckDetailBloc extends Bloc<DeckDetailEvent, DeckDetailState> {
   final GetDeckByIdUseCase getDeckByIdUseCase;

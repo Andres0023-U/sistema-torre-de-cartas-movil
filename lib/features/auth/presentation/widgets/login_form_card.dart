@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
-import '../bloc/auth_state.dart';
-import 'gold_button.dart';
-import 'password_field.dart';
+import 'package:torre_de_cartas_movil/core/theme/app_colors.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/bloc/auth_event.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/bloc/auth_state.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/widgets/gold_button.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/widgets/password_field.dart';
 
 class LoginFormCard extends StatefulWidget {
   const LoginFormCard({super.key});

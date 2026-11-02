@@ -1,7 +1,7 @@
-import '../entities/card_entity.dart';
-import '../entities/deck_card_entity.dart';
-import '../entities/deck_create_entity.dart';
-import '../entities/deck_entity.dart';
+import 'package:torre_de_cartas_movil/models/decks/card_entity.dart';
+import 'package:torre_de_cartas_movil/models/decks/deck_card_entity.dart';
+import 'package:torre_de_cartas_movil/models/decks/deck_create_entity.dart';
+import 'package:torre_de_cartas_movil/models/decks/deck_entity.dart';
 
 abstract class DeckRepository {
   Future<List<DeckEntity>> getMyDecks();

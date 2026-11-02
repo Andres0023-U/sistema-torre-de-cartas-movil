@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
-import '../../domain/entities/card_entity.dart';
-import '../../domain/entities/deck_card_entity.dart';
-import '../../domain/entities/deck_entity.dart';
+import 'package:torre_de_cartas_movil/models/decks/card_entity.dart';
+import 'package:torre_de_cartas_movil/models/decks/deck_card_entity.dart';
+import 'package:torre_de_cartas_movil/models/decks/deck_entity.dart';
 
 abstract class DeckDetailState extends Equatable {
   const DeckDetailState();

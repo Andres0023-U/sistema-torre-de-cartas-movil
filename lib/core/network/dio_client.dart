@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
-import '../config/app_config.dart';
-import '../di/injection_container.dart';
-import '../storage/session_storage.dart';
-import 'token_holder.dart';
+import 'package:torre_de_cartas_movil/core/config/app_config.dart';
+import 'package:torre_de_cartas_movil/core/di/injection_container.dart';
+import 'package:torre_de_cartas_movil/core/storage/session_storage.dart';
+import 'package:torre_de_cartas_movil/core/network/token_holder.dart';
 
 class DioClient {
   final Dio dio;

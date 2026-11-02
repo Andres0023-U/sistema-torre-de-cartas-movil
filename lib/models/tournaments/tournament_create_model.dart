@@ -1,0 +1,37 @@
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_create_entity.dart';
+
+class TournamentCreateModel extends TournamentCreateEntity {
+  const TournamentCreateModel({
+    required super.name,
+    required super.date,
+    required super.format,
+    required super.numPlayers,
+  });
+
+  factory TournamentCreateModel.fromEntity(TournamentCreateEntity entity) {
+    return TournamentCreateModel(
+      name: entity.name,
+      date: entity.date,
+      format: entity.format,
+      numPlayers: entity.numPlayers,
+    );
+  }
+
+  factory TournamentCreateModel.fromJson(Map<String, dynamic> json) {
+    return TournamentCreateModel(
+      name: json['name'] as String? ?? '',
+      date: json['date'] as String? ?? '',
+      format: json['format'] as String? ?? '',
+      numPlayers: json['num_players'] as int? ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'date': date,
+      'format': format,
+      'num_players': numPlayers,
+    };
+  }
+}

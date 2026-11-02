@@ -1,0 +1,25 @@
+import 'package:torre_de_cartas_movil/models/tournaments/start_tournament_response_entity.dart';
+
+class StartTournamentResponseModel extends StartTournamentResponseEntity {
+  const StartTournamentResponseModel({
+    required super.tournamentId,
+    required super.status,
+    required super.roundId,
+  });
+
+  factory StartTournamentResponseModel.fromJson(Map<String, dynamic> json) {
+    return StartTournamentResponseModel(
+      tournamentId: json['tournament_id'] as int? ?? 0,
+      status: json['status'] as String? ?? '',
+      roundId: json['round_id'] as int? ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'tournament_id': tournamentId,
+      'status': status,
+      'round_id': roundId,
+    };
+  }
+}

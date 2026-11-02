@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/usecases/get_tournaments_usecase.dart';
-import 'tournaments_event.dart';
-import 'tournaments_state.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/domain/usecases/get_tournaments_usecase.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/tournaments_event.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/tournaments_state.dart';
 
 class TournamentsBloc extends Bloc<TournamentsEvent, TournamentsState> {
   final GetTournamentsUseCase getTournamentsUseCase;

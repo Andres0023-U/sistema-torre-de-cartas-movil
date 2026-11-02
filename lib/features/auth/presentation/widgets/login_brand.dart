@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/theme/app_colors.dart';
-import 'crest_badge.dart';
+import 'package:torre_de_cartas_movil/core/theme/app_colors.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/widgets/crest_badge.dart';
 
 class LoginBrand extends StatelessWidget {
   const LoginBrand({super.key});

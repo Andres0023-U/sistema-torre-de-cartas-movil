@@ -1,5 +1,5 @@
-import '../entities/global_ranking_entry_entity.dart';
-import '../repositories/ranking_repository.dart';
+import 'package:torre_de_cartas_movil/models/ranking/global_ranking_entry_entity.dart';
+import 'package:torre_de_cartas_movil/features/ranking/domain/repositories/ranking_repository.dart';
 
 class GetRankingUseCase {
   final RankingRepository repository;

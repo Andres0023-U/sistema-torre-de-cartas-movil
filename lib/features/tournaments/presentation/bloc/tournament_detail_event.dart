@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../domain/entities/player_with_user_entity.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/player_with_user_entity.dart';
 
 abstract class TournamentDetailEvent extends Equatable {
   const TournamentDetailEvent();

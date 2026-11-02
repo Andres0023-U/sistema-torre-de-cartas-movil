@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/di/injection_container.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../domain/entities/card_entity.dart';
-import '../bloc/deck_detail_bloc.dart';
-import '../bloc/deck_detail_event.dart';
-import '../bloc/deck_detail_state.dart';
-import '../widgets/card_carousel_item.dart';
+import 'package:torre_de_cartas_movil/core/di/injection_container.dart';
+import 'package:torre_de_cartas_movil/core/theme/app_colors.dart';
+import 'package:torre_de_cartas_movil/models/decks/card_entity.dart';
+import 'package:torre_de_cartas_movil/features/decks/presentation/bloc/deck_detail_bloc.dart';
+import 'package:torre_de_cartas_movil/features/decks/presentation/bloc/deck_detail_event.dart';
+import 'package:torre_de_cartas_movil/features/decks/presentation/bloc/deck_detail_state.dart';
+import 'package:torre_de_cartas_movil/features/decks/presentation/widgets/card_carousel_item.dart';
 
 class DeckDetailPage extends StatelessWidget {
   final String deckId;

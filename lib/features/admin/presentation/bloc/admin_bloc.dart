@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'admin_event.dart';
-import 'admin_state.dart';
+import 'package:torre_de_cartas_movil/features/admin/presentation/bloc/admin_event.dart';
+import 'package:torre_de_cartas_movil/features/admin/presentation/bloc/admin_state.dart';
 
 class AdminBloc extends Bloc<AdminEvent, AdminState> {
   AdminBloc() : super(AdminInitialState()) {

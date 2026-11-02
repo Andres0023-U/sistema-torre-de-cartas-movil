@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../auth/domain/entities/user_role.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../auth/presentation/bloc/auth_event.dart';
-import '../../../auth/presentation/bloc/auth_state.dart';
+import 'package:torre_de_cartas_movil/core/theme/app_colors.dart';
+import 'package:torre_de_cartas_movil/models/auth/user_role.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/bloc/auth_event.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/bloc/auth_state.dart';
 
 class AccountPage extends StatelessWidget {
   const AccountPage({super.key});

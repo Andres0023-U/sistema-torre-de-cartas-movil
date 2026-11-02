@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../features/auth/domain/entities/user_role.dart';
-import '../../features/auth/presentation/bloc/auth_bloc.dart';
-import '../../features/auth/presentation/bloc/auth_state.dart';
+import 'package:torre_de_cartas_movil/models/auth/user_role.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/bloc/auth_state.dart';
 
 class NavigationItem {
   final String label;

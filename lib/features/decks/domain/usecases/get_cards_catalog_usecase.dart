@@ -1,5 +1,5 @@
-import '../entities/card_entity.dart';
-import '../repositories/deck_repository.dart';
+import 'package:torre_de_cartas_movil/models/decks/card_entity.dart';
+import 'package:torre_de_cartas_movil/features/decks/domain/repositories/deck_repository.dart';
 
 class GetCardsCatalogUseCase {
   final DeckRepository repository;

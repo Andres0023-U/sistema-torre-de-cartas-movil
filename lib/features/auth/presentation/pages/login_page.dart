@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../widgets/login_brand.dart';
-import '../widgets/login_form_card.dart';
+import 'package:torre_de_cartas_movil/core/theme/app_colors.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/widgets/login_brand.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/widgets/login_form_card.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

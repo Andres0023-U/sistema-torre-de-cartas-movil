@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/usecases/get_ranking_usecase.dart';
-import 'ranking_event.dart';
-import 'ranking_state.dart';
+import 'package:torre_de_cartas_movil/features/ranking/domain/usecases/get_ranking_usecase.dart';
+import 'package:torre_de_cartas_movil/features/ranking/presentation/bloc/ranking_event.dart';
+import 'package:torre_de_cartas_movil/features/ranking/presentation/bloc/ranking_state.dart';
 
 class RankingBloc extends Bloc<RankingEvent, RankingState> {
   final GetRankingUseCase getRankingUseCase;

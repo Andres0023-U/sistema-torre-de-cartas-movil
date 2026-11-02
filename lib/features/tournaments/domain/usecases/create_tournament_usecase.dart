@@ -1,6 +1,6 @@
-import '../entities/tournament_create_entity.dart';
-import '../entities/tournament_entity.dart';
-import '../repositories/tournament_repository.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_create_entity.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_entity.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/domain/repositories/tournament_repository.dart';
 
 class CreateTournamentUseCase {
   final TournamentRepository repository;

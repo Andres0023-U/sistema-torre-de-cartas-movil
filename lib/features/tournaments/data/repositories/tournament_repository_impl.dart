@@ -1,14 +1,14 @@
 import 'package:dio/dio.dart';
-import '../../domain/entities/player_with_user_entity.dart';
-import '../../domain/entities/registration_entity.dart';
-import '../../domain/entities/round_entity.dart';
-import '../../domain/entities/start_tournament_response_entity.dart';
-import '../../domain/entities/tournament_create_entity.dart';
-import '../../domain/entities/tournament_entity.dart';
-import '../../domain/entities/tournament_player_entity.dart';
-import '../../domain/repositories/tournament_repository.dart';
-import '../datasources/tournament_remote_data_source.dart';
-import '../models/tournament_create_model.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/player_with_user_entity.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/registration_entity.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/round_entity.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/start_tournament_response_entity.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_create_entity.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_entity.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_player_entity.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/domain/repositories/tournament_repository.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/data/datasources/tournament_remote_data_source.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_create_model.dart';
 
 class TournamentRepositoryImpl implements TournamentRepository {
   final TournamentRemoteDataSource remoteDataSource;

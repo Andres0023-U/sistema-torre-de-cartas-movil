@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../domain/entities/deck_entity.dart';
-import '../bloc/decks_bloc.dart';
-import '../bloc/decks_event.dart';
-import '../bloc/decks_state.dart';
+import 'package:torre_de_cartas_movil/core/theme/app_colors.dart';
+import 'package:torre_de_cartas_movil/models/decks/deck_entity.dart';
+import 'package:torre_de_cartas_movil/features/decks/presentation/bloc/decks_bloc.dart';
+import 'package:torre_de_cartas_movil/features/decks/presentation/bloc/decks_event.dart';
+import 'package:torre_de_cartas_movil/features/decks/presentation/bloc/decks_state.dart';
 
 class MyDecksPage extends StatefulWidget {
   const MyDecksPage({super.key});

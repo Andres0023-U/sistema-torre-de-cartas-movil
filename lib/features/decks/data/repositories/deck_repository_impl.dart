@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
-import '../../domain/entities/card_entity.dart';
-import '../../domain/entities/deck_card_entity.dart';
-import '../../domain/entities/deck_create_entity.dart';
-import '../../domain/entities/deck_entity.dart';
-import '../../domain/repositories/deck_repository.dart';
-import '../datasources/deck_remote_data_source.dart';
-import '../models/deck_create_model.dart';
+import 'package:torre_de_cartas_movil/models/decks/card_entity.dart';
+import 'package:torre_de_cartas_movil/models/decks/deck_card_entity.dart';
+import 'package:torre_de_cartas_movil/models/decks/deck_create_entity.dart';
+import 'package:torre_de_cartas_movil/models/decks/deck_entity.dart';
+import 'package:torre_de_cartas_movil/features/decks/domain/repositories/deck_repository.dart';
+import 'package:torre_de_cartas_movil/features/decks/data/datasources/deck_remote_data_source.dart';
+import 'package:torre_de_cartas_movil/models/decks/deck_create_model.dart';
 
 class DeckRepositoryImpl implements DeckRepository {
   final DeckRemoteDataSource remoteDataSource;

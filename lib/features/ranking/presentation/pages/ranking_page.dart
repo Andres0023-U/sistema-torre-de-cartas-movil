@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../domain/entities/global_ranking_entry_entity.dart';
-import '../bloc/ranking_bloc.dart';
-import '../bloc/ranking_event.dart';
-import '../bloc/ranking_state.dart';
+import 'package:torre_de_cartas_movil/core/theme/app_colors.dart';
+import 'package:torre_de_cartas_movil/models/ranking/global_ranking_entry_entity.dart';
+import 'package:torre_de_cartas_movil/features/ranking/presentation/bloc/ranking_bloc.dart';
+import 'package:torre_de_cartas_movil/features/ranking/presentation/bloc/ranking_event.dart';
+import 'package:torre_de_cartas_movil/features/ranking/presentation/bloc/ranking_state.dart';
 
 class RankingPage extends StatefulWidget {
   const RankingPage({super.key});

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../domain/entities/tournament_entity.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_entity.dart';
 
 abstract class TournamentsState extends Equatable {
   const TournamentsState();

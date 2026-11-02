@@ -1,7 +1,7 @@
-import '../../../../core/network/token_holder.dart';
-import '../../../../core/storage/session_storage.dart';
-import '../entities/user_entity.dart';
-import '../repositories/auth_repository.dart';
+import 'package:torre_de_cartas_movil/core/network/token_holder.dart';
+import 'package:torre_de_cartas_movil/core/storage/session_storage.dart';
+import 'package:torre_de_cartas_movil/models/auth/user_entity.dart';
+import 'package:torre_de_cartas_movil/features/auth/domain/repositories/auth_repository.dart';
 
 class LoginUseCase {
   final AuthRepository repository;

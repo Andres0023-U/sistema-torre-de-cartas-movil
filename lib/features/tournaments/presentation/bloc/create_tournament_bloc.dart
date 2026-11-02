@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/usecases/create_tournament_usecase.dart';
-import 'create_tournament_event.dart';
-import 'create_tournament_state.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/domain/usecases/create_tournament_usecase.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/create_tournament_event.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/create_tournament_state.dart';
 
 class CreateTournamentBloc
     extends Bloc<CreateTournamentEvent, CreateTournamentState> {

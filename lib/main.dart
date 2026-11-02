@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'core/di/injection_container.dart' as di;
-import 'core/di/injection_container.dart' show sl;
-import 'core/router/app_router.dart';
-import 'core/theme/app_theme.dart';
-import 'features/account/presentation/bloc/account_bloc.dart';
-import 'features/admin/presentation/bloc/admin_bloc.dart';
-import 'features/auth/presentation/bloc/auth_bloc.dart';
-import 'features/auth/presentation/bloc/auth_event.dart';
-import 'features/auth/presentation/bloc/auth_state.dart';
-import 'features/decks/presentation/bloc/decks_bloc.dart';
-import 'features/ranking/presentation/bloc/ranking_bloc.dart';
-import 'features/tournaments/presentation/bloc/tournaments_bloc.dart';
+import 'package:torre_de_cartas_movil/core/di/injection_container.dart' as di;
+import 'package:torre_de_cartas_movil/core/di/injection_container.dart' show sl;
+import 'package:torre_de_cartas_movil/core/router/app_router.dart';
+import 'package:torre_de_cartas_movil/core/theme/app_theme.dart';
+import 'package:torre_de_cartas_movil/features/account/presentation/bloc/account_bloc.dart';
+import 'package:torre_de_cartas_movil/features/admin/presentation/bloc/admin_bloc.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/bloc/auth_event.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/bloc/auth_state.dart';
+import 'package:torre_de_cartas_movil/features/decks/presentation/bloc/decks_bloc.dart';
+import 'package:torre_de_cartas_movil/features/ranking/presentation/bloc/ranking_bloc.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/tournaments_bloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

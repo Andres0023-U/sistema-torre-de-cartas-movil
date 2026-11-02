@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../domain/entities/player_with_user_entity.dart';
-import '../bloc/tournament_detail_bloc.dart';
-import '../bloc/tournament_detail_event.dart';
-import '../bloc/tournament_detail_state.dart';
+import 'package:torre_de_cartas_movil/core/theme/app_colors.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/player_with_user_entity.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/tournament_detail_bloc.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/tournament_detail_event.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/tournament_detail_state.dart';
 
 /// Hoja inferior para inscribir un jugador en el torneo.
 /// Requiere un [TournamentDetailBloc] disponible en el contexto.

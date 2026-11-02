@@ -1,4 +1,4 @@
-import '../repositories/deck_repository.dart';
+import 'package:torre_de_cartas_movil/features/decks/domain/repositories/deck_repository.dart';
 
 class RemoveCardFromDeckUseCase {
   final DeckRepository repository;

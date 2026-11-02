@@ -1,5 +1,5 @@
-import '../entities/round_entity.dart';
-import '../repositories/tournament_repository.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/round_entity.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/domain/repositories/tournament_repository.dart';
 
 class GetTournamentRoundsUseCase {
   final TournamentRepository repository;

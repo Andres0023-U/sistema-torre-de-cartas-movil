@@ -1,0 +1,22 @@
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_player_entity.dart';
+
+class TournamentPlayerModel extends TournamentPlayerEntity {
+  const TournamentPlayerModel({
+    required super.playerId,
+    required super.name,
+  });
+
+  factory TournamentPlayerModel.fromJson(Map<String, dynamic> json) {
+    return TournamentPlayerModel(
+      playerId: json['player_id'] as int? ?? 0,
+      name: json['name'] as String? ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'player_id': playerId,
+      'name': name,
+    };
+  }
+}

@@ -1,10 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../data/repositories/auth_repository_impl.dart';
-import '../../domain/usecases/login_usecase.dart';
-import '../../domain/usecases/logout_usecase.dart';
-import '../../domain/usecases/restore_session_usecase.dart';
-import 'auth_event.dart';
-import 'auth_state.dart';
+import 'package:torre_de_cartas_movil/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:torre_de_cartas_movil/features/auth/domain/usecases/login_usecase.dart';
+import 'package:torre_de_cartas_movil/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:torre_de_cartas_movil/features/auth/domain/usecases/restore_session_usecase.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/bloc/auth_event.dart';
+import 'package:torre_de_cartas_movil/features/auth/presentation/bloc/auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase loginUseCase;

@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/entities/deck_create_entity.dart';
-import '../../domain/usecases/create_deck_usecase.dart';
-import '../../domain/usecases/get_decks_usecase.dart';
-import 'decks_event.dart';
-import 'decks_state.dart';
+import 'package:torre_de_cartas_movil/models/decks/deck_create_entity.dart';
+import 'package:torre_de_cartas_movil/features/decks/domain/usecases/create_deck_usecase.dart';
+import 'package:torre_de_cartas_movil/features/decks/domain/usecases/get_decks_usecase.dart';
+import 'package:torre_de_cartas_movil/features/decks/presentation/bloc/decks_event.dart';
+import 'package:torre_de_cartas_movil/features/decks/presentation/bloc/decks_state.dart';
 
 class DecksBloc extends Bloc<DecksEvent, DecksState> {
   final GetDecksUseCase getDecksUseCase;

@@ -1,6 +1,6 @@
-import '../models/login_response_model.dart';
-import '../models/user_model.dart';
-import '../../../../core/network/dio_client.dart';
+import 'package:torre_de_cartas_movil/models/auth/login_response_model.dart';
+import 'package:torre_de_cartas_movil/models/auth/user_model.dart';
+import 'package:torre_de_cartas_movil/core/network/dio_client.dart';
 
 abstract class AuthRemoteDataSource {
   Future<LoginResponseModel> login(String email, String password);

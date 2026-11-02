@@ -1,5 +1,5 @@
-import '../entities/player_with_user_entity.dart';
-import '../repositories/tournament_repository.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/player_with_user_entity.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/domain/repositories/tournament_repository.dart';
 
 class GetAvailablePlayersUseCase {
   final TournamentRepository repository;

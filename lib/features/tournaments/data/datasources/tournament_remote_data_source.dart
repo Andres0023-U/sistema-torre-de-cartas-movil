@@ -1,11 +1,11 @@
-import '../../../../core/network/dio_client.dart';
-import '../models/player_with_user_model.dart';
-import '../models/registration_model.dart';
-import '../models/round_model.dart';
-import '../models/start_tournament_response_model.dart';
-import '../models/tournament_create_model.dart';
-import '../models/tournament_model.dart';
-import '../models/tournament_player_model.dart';
+import 'package:torre_de_cartas_movil/core/network/dio_client.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/player_with_user_model.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/registration_model.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/round_model.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/start_tournament_response_model.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_create_model.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_model.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_player_model.dart';
 
 abstract class TournamentRemoteDataSource {
   Future<List<TournamentModel>> getTournaments();

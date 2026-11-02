@@ -1,5 +1,5 @@
-import '../../../../core/network/dio_client.dart';
-import '../models/global_ranking_entry_model.dart';
+import 'package:torre_de_cartas_movil/core/network/dio_client.dart';
+import 'package:torre_de_cartas_movil/models/ranking/global_ranking_entry_model.dart';
 
 abstract class RankingRemoteDataSource {
   Future<List<GlobalRankingEntryModel>> getGlobalRanking();

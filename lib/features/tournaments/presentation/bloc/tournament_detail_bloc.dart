@@ -1,15 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/entities/round_entity.dart';
-import '../../domain/entities/tournament_entity.dart';
-import '../../domain/entities/tournament_player_entity.dart';
-import '../../domain/usecases/get_available_players_usecase.dart';
-import '../../domain/usecases/get_tournament_players_usecase.dart';
-import '../../domain/usecases/get_tournament_rounds_usecase.dart';
-import '../../domain/usecases/get_tournaments_usecase.dart';
-import '../../domain/usecases/register_player_usecase.dart';
-import '../../domain/usecases/start_tournament_usecase.dart';
-import 'tournament_detail_event.dart';
-import 'tournament_detail_state.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/round_entity.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_entity.dart';
+import 'package:torre_de_cartas_movil/models/tournaments/tournament_player_entity.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/domain/usecases/get_available_players_usecase.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/domain/usecases/get_tournament_players_usecase.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/domain/usecases/get_tournament_rounds_usecase.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/domain/usecases/get_tournaments_usecase.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/domain/usecases/register_player_usecase.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/domain/usecases/start_tournament_usecase.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/tournament_detail_event.dart';
+import 'package:torre_de_cartas_movil/features/tournaments/presentation/bloc/tournament_detail_state.dart';
 
 class TournamentDetailBloc
     extends Bloc<TournamentDetailEvent, TournamentDetailState> {

@@ -1,6 +1,6 @@
-import '../entities/deck_create_entity.dart';
-import '../entities/deck_entity.dart';
-import '../repositories/deck_repository.dart';
+import 'package:torre_de_cartas_movil/models/decks/deck_create_entity.dart';
+import 'package:torre_de_cartas_movil/models/decks/deck_entity.dart';
+import 'package:torre_de_cartas_movil/features/decks/domain/repositories/deck_repository.dart';
 
 class CreateDeckUseCase {
   final DeckRepository repository;

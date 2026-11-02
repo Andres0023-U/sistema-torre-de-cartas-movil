@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import 'package:torre_de_cartas_movil/core/theme/app_colors.dart';
 
 class CrestBadge extends StatelessWidget {
   const CrestBadge({super.key});

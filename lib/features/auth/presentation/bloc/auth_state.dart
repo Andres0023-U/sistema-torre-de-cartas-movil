@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../domain/entities/user_role.dart';
+import 'package:torre_de_cartas_movil/models/auth/user_role.dart';
 
 enum AuthStatus { initial, loading, authenticated, unauthenticated, failure }
 

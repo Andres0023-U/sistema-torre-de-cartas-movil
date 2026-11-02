@@ -1,8 +1,8 @@
-import '../../../../core/network/dio_client.dart';
-import '../models/card_model.dart';
-import '../models/deck_card_model.dart';
-import '../models/deck_create_model.dart';
-import '../models/deck_model.dart';
+import 'package:torre_de_cartas_movil/core/network/dio_client.dart';
+import 'package:torre_de_cartas_movil/models/decks/card_model.dart';
+import 'package:torre_de_cartas_movil/models/decks/deck_card_model.dart';
+import 'package:torre_de_cartas_movil/models/decks/deck_create_model.dart';
+import 'package:torre_de_cartas_movil/models/decks/deck_model.dart';
 
 abstract class DeckRemoteDataSource {
   Future<List<DeckModel>> getMyDecks();
