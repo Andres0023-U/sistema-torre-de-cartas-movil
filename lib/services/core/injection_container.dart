@@ -1,6 +1,11 @@
 import 'package:get_it/get_it.dart';
 import 'package:torre_de_cartas_movil/bloc/account/account_bloc.dart';
 import 'package:torre_de_cartas_movil/bloc/admin/admin_bloc.dart';
+import 'package:torre_de_cartas_movil/repositories/account/account_repository.dart';
+import 'package:torre_de_cartas_movil/repositories/account/account_repository_impl.dart';
+import 'package:torre_de_cartas_movil/services/api/account_remote_data_source.dart';
+import 'package:torre_de_cartas_movil/services/usecases/account/change_password_usecase.dart';
+import 'package:torre_de_cartas_movil/services/usecases/account/update_name_usecase.dart';
 import 'package:torre_de_cartas_movil/services/api/auth_remote_data_source.dart';
 import 'package:torre_de_cartas_movil/repositories/auth/auth_repository_impl.dart';
 import 'package:torre_de_cartas_movil/repositories/auth/auth_repository.dart';
@@ -24,7 +29,9 @@ import 'package:torre_de_cartas_movil/bloc/decks/decks_bloc.dart';
 import 'package:torre_de_cartas_movil/services/api/ranking_remote_data_source.dart';
 import 'package:torre_de_cartas_movil/repositories/ranking/ranking_repository_impl.dart';
 import 'package:torre_de_cartas_movil/repositories/ranking/ranking_repository.dart';
+import 'package:torre_de_cartas_movil/services/usecases/ranking/get_my_ranking_usecase.dart';
 import 'package:torre_de_cartas_movil/services/usecases/ranking/get_ranking_usecase.dart';
+import 'package:torre_de_cartas_movil/services/usecases/ranking/get_tournament_ranking_usecase.dart';
 import 'package:torre_de_cartas_movil/bloc/ranking/ranking_bloc.dart';
 import 'package:torre_de_cartas_movil/services/api/tournament_remote_data_source.dart';
 import 'package:torre_de_cartas_movil/repositories/tournaments/tournament_repository_impl.dart';
@@ -90,6 +97,12 @@ void initDependencies() {
   sl.registerLazySingleton<GetRankingUseCase>(
     () => GetRankingUseCase(repository: sl<RankingRepository>()),
   );
+  sl.registerLazySingleton<GetMyRankingUseCase>(
+    () => GetMyRankingUseCase(repository: sl<RankingRepository>()),
+  );
+  sl.registerLazySingleton<GetTournamentRankingUseCase>(
+    () => GetTournamentRankingUseCase(repository: sl<RankingRepository>()),
+  );
 
   // Tournaments data & domain
   sl.registerLazySingleton<TournamentRemoteDataSource>(
@@ -153,6 +166,17 @@ void initDependencies() {
     () => RemoveCardFromDeckUseCase(repository: sl<DeckRepository>()),
   );
 
+  // Account data & domain
+  sl.registerLazySingleton<AccountRemoteDataSource>(
+    () => AccountRemoteDataSourceImpl(dioClient: sl<DioClient>()),
+  );
+  sl.registerLazySingleton<AccountRepository>(
+    () => AccountRepositoryImpl(remoteDataSource: sl<AccountRemoteDataSource>()),
+  );
+  sl.registerLazySingleton<UpdateNameUseCase>(
+    () => UpdateNameUseCase(repository: sl<AccountRepository>()),
+  );
+
   sl.registerLazySingleton<AuthBloc>(
     () => AuthBloc(
       loginUseCase: sl<LoginUseCase>(),
@@ -196,8 +220,21 @@ void initDependencies() {
     ),
   );
   sl.registerFactory<RankingBloc>(
-    () => RankingBloc(getRankingUseCase: sl<GetRankingUseCase>()),
+    () => RankingBloc(
+      getRankingUseCase: sl<GetRankingUseCase>(),
+      getMyRankingUseCase: sl<GetMyRankingUseCase>(),
+      getTournamentRankingUseCase: sl<GetTournamentRankingUseCase>(),
+      getTournamentsUseCase: sl<GetTournamentsUseCase>(),
+    ),
   );
-  sl.registerFactory<AccountBloc>(() => AccountBloc());
+  sl.registerLazySingleton<ChangePasswordUseCase>(
+    () => ChangePasswordUseCase(repository: sl<AccountRepository>()),
+  );
+  sl.registerFactory<AccountBloc>(
+    () => AccountBloc(
+      updateNameUseCase: sl<UpdateNameUseCase>(),
+      changePasswordUseCase: sl<ChangePasswordUseCase>(),
+    ),
+  );
   sl.registerFactory<AdminBloc>(() => AdminBloc());
 }

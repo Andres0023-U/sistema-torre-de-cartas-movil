@@ -65,6 +65,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
+    on<AuthUserNameUpdated>((event, emit) {
+      emit(AuthState(
+        status: state.status,
+        role: state.role,
+        userId: state.userId,
+        name: event.name,
+        email: state.email,
+      ));
+    });
+
     on<AuthLogoutRequested>((event, emit) async {
       await logoutUseCase();
       emit(const AuthState(status: AuthStatus.unauthenticated));

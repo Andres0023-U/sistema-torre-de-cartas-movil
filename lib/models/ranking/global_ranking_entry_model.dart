@@ -12,17 +12,35 @@ class GlobalRankingEntryModel extends GlobalRankingEntryEntity {
     super.lastResultDate,
   });
 
+  static int _toInt(dynamic value, [int fallback = 0]) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? fallback;
+    return fallback;
+  }
+
   factory GlobalRankingEntryModel.fromJson(Map<String, dynamic> json) {
     final rawDate = json['last_result_date'] ?? json['lastResultDate'];
+    final rawName = json['name'] ??
+        json['player_name'] ??
+        json['playerName'] ??
+        json['user_name'] ??
+        json['username'] ??
+        '';
     return GlobalRankingEntryModel(
-      position: json['position'] as int? ?? 0,
-      playerId: json['player_id'] as int? ?? json['playerId'] as int? ?? 0,
-      name: json['name'] as String? ?? '',
-      played: json['played'] as int? ?? 0,
-      won: json['won'] as int? ?? 0,
-      lost: json['lost'] as int? ?? 0,
-      points: json['points'] as int? ?? 0,
-      lastResultDate: rawDate != null ? DateTime.tryParse(rawDate.toString()) : null,
+      position: _toInt(json['position'] ?? json['rank']),
+      playerId: _toInt(
+        json['player_id'] ?? json['playerId'] ?? json['id'] ?? json['user_id'],
+      ),
+      name: rawName.toString(),
+      played: _toInt(
+        json['played'] ?? json['matches_played'] ?? json['games_played'],
+      ),
+      won: _toInt(json['won'] ?? json['matches_won'] ?? json['wins']),
+      lost: _toInt(json['lost'] ?? json['matches_lost'] ?? json['losses']),
+      points: _toInt(json['points'] ?? json['total_points'] ?? json['score']),
+      lastResultDate:
+          rawDate != null ? DateTime.tryParse(rawDate.toString()) : null,
     );
   }
 

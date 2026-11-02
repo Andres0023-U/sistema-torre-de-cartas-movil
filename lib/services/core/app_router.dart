@@ -23,12 +23,21 @@ import 'package:torre_de_cartas_movil/pages/main_shell_page.dart';
 
 class GoRouterRefreshStream extends ChangeNotifier {
   late final StreamSubscription<dynamic> _subscription;
+  AuthStatus? _lastStatus;
+  UserRole? _lastRole;
 
   GoRouterRefreshStream(Stream<dynamic> stream) {
     notifyListeners();
-    _subscription = stream.asBroadcastStream().listen(
-          (_) => notifyListeners(),
-        );
+    _subscription = stream.asBroadcastStream().listen((event) {
+      if (event is AuthState) {
+        if (event.status == _lastStatus && event.role == _lastRole) {
+          return;
+        }
+        _lastStatus = event.status;
+        _lastRole = event.role;
+      }
+      notifyListeners();
+    });
   }
 
   @override

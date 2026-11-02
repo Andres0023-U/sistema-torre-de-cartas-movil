@@ -13,31 +13,53 @@ class TournamentRankingEntryModel extends TournamentRankingEntryEntity {
     super.eliminatedRound,
   });
 
+  static int _toInt(dynamic value, [int fallback = 0]) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? fallback;
+    return fallback;
+  }
+
+  static int? _toNullableInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
+
   factory TournamentRankingEntryModel.fromJson(Map<String, dynamic> json) {
+    final rawName = json['name'] ??
+        json['player_name'] ??
+        json['playerName'] ??
+        json['username'] ??
+        '';
     return TournamentRankingEntryModel(
-      position: json['position'] as int? ?? 0,
-      playerId: json['playerId'] as int? ?? 0,
-      name: json['name'] as String? ?? '',
-      played: json['played'] as int? ?? 0,
-      won: json['won'] as int? ?? 0,
-      lost: json['lost'] as int? ?? 0,
-      points: json['points'] as int? ?? 0,
-      life: json['life'] as int? ?? 0,
-      eliminatedRound: json['eliminatedRound'] as int?,
+      position: _toInt(json['position'] ?? json['rank']),
+      playerId: _toInt(json['player_id'] ?? json['playerId'] ?? json['id']),
+      name: rawName.toString(),
+      played: _toInt(json['played']),
+      won: _toInt(json['won']),
+      lost: _toInt(json['lost']),
+      points: _toInt(json['points']),
+      life: _toInt(json['life']),
+      eliminatedRound: _toNullableInt(
+        json['eliminated_round'] ?? json['eliminatedRound'],
+      ),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'position': position,
-      'playerId': playerId,
+      'player_id': playerId,
       'name': name,
       'played': played,
       'won': won,
       'lost': lost,
       'points': points,
       'life': life,
-      if (eliminatedRound != null) 'eliminatedRound': eliminatedRound,
+      if (eliminatedRound != null) 'eliminated_round': eliminatedRound,
     };
   }
 }
